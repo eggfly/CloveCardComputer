@@ -40,3 +40,10 @@ ESP32-S3R8 with 8MB internal Octal SPI PSRAM, 32MB external QIO Flash.
 | PCF8563 | 81 (0x51) | RTC 时钟 |
 | AXP2101 | 52 (0x34) | 电源 IC |
 
+## Key map
+| Key | COL1 | COL2 | COL3 | COL4 | COL5 | 左/右 | COL1 | COL2 | COL3 | COL4 | COL5 |
+| --  |  --  |  --  |  --  |  --  |  --  | -- |  --  |  --  |  --  |  --  |  --  |
+| ROW1 | 1 | 2 | 3 | 4 | 5 | ROW5 | 6 | 7 | 8 | 9 | 0 |
+| ROW2 | Q | W | E | R | T | ROW6 | Y | U | I | O | P |
+| ROW3 | A | S | D | F | G | ROW7 | H | J | K | L | 上 |
+| ROW4 | Z | X | C | V | B | ROW8 | N | M | 左 | 下 | 右 |

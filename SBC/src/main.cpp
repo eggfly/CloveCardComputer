@@ -37,7 +37,7 @@ TFT_eSPI tft = TFT_eSPI();
 
 unsigned long total = 0;
 unsigned long tn = 0;
-void setup()
+void setup3()
 {
   Serial.begin(115200);
 
@@ -56,7 +56,7 @@ void setup()
   tft.setRotation(1);
 }
 
-void loop(void)
+void loop2(void)
 {
   Serial.println(F("Benchmark                Time (microseconds)"));
 
