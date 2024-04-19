@@ -1,7 +1,19 @@
-# SBC
-## Single Board Computer
+# Clove Card Computer
 
-ESP32-S3R8 with 8MB internal Octal SPI PSRAM, 32MB external QIO Flash.
+## Hardware
+
+This ESP32-S3 card computer includes:
+
+* ESP32-S3R8 with 8MB internal Octal SPI PSRAM
+* 32MB external QIO Flash
+* 2.0" 320*240 ST7789 IPS screen
+* Keyboard button 4x10 matrix
+* AXP2101 power IC
+* MAX98357 Amplifier and speaker
+* PCM5102 DAC and headphone jack
+* PCF8563 RTC
+* USB Type-C, Li-ion battery and Grove I2C port
+
 
 ## IO Pins
 
