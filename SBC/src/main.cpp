@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <app.h>
 
 void setup()
 {
@@ -10,10 +11,13 @@ void setup()
   ledcSetup(ledChannel, freq, resolution);
   ledcAttachPin(45, ledChannel);
   ledcWrite(ledChannel, 230);
+
+  setup_i2s();
 }
 
 void loop(void)
 {
+  loop_i2s();
   Serial.println("loop...");
-  delay(1000);
+  // delay(1000);
 }
