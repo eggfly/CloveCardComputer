@@ -21,26 +21,31 @@
 #include "FS.h"
 
 // Digital I/O used
-#define SD_CS 5
-#define SPI_MOSI 23
-#define SPI_MISO 19
-#define SPI_SCK 18
-#define I2S_DOUT 25
-#define I2S_BCLK 27
-#define I2S_LRC 26
+#define SD_CS    42
+#define SPI_MOSI 41
+#define SPI_MISO 39
+#define SPI_SCK  40
+
+#define I2S_DOUT  9
+#define I2S_BCLK 47
+#define I2S_LRC  48
 
 Audio audio;
 WiFiMulti wifiMulti;
-String ssid = "xxxxx";
-String password = "xxxxx";
+String ssid = "MIWIFI8";
+String password = "12345678";
 
 void setup_i2s()
 {
+    // GPIO46 -> SD_MODE, ESP32-S3 的内部上拉电阻范围为几万欧姆(几十K)
+    // pinMode(46, OUTPUT);
+    // digitalWrite(46, HIGH);
+
     pinMode(SD_CS, OUTPUT);
     digitalWrite(SD_CS, HIGH);
     SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
     SPI.setFrequency(1000000);
-    Serial.begin(115200);
+    // Serial.begin(115200);
     SD.begin(SD_CS);
     WiFi.mode(WIFI_STA);
     wifiMulti.addAP(ssid.c_str(), password.c_str());
@@ -51,15 +56,10 @@ void setup_i2s()
         wifiMulti.run();
     }
     audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-    audio.setVolume(12); // 0...21
-
-    //    audio.connecttoFS(SD, "/320k_test.mp3");
-    //    audio.connecttoFS(SD, "test.wav");
-    //    audio.connecttohost("http://www.wdr.de/wdrlive/media/einslive.m3u");
-    //    audio.connecttohost("http://macslons-irish-pub-radio.com/media.asx");
-    //    audio.connecttohost("http://mp3.ffh.de/radioffh/hqlivestream.aac"); //  128k aac
-    audio.connecttohost("http://mp3.ffh.de/radioffh/hqlivestream.mp3"); //  128k mp3
-    // http://42.193.120.65:8002/ygzjhyl.mp3
+    audio.setVolume(8); // 0...21
+    // const char * url = "http://42.193.120.65:8002/ygzjhyl.mp3";
+    const char * url = "http://42.193.120.65:8002/520AM.mp3";
+    audio.connecttohost(url);
 }
 
 void loop_i2s()

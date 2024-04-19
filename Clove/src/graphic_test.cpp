@@ -15,29 +15,14 @@
 
 #include "SPI.h"
 #include "TFT_eSPI.h"
-
-void printnice(int32_t v);
-uint32_t testFilledRoundRects();
-
-uint32_t testRoundRects();
-uint32_t testFilledRects(uint16_t color1, uint16_t color2);
-uint32_t testFilledTriangles();
-uint32_t testFilledCircles(uint8_t radius, uint16_t color);
-uint32_t testTriangles();
-uint32_t testText();
-uint32_t testFillScreen();
-uint32_t testPixels();
-uint32_t testCircles(uint8_t radius, uint16_t color);
-uint32_t testRects(uint16_t color);
-uint32_t testLines(uint16_t color);
-uint32_t testFastLines(uint16_t color1, uint16_t color2);
+#include <app.h>
 
 // Use hardware SPI
 TFT_eSPI tft = TFT_eSPI();
 
 unsigned long total = 0;
 unsigned long tn = 0;
-void setup3()
+void setup_graphic()
 {
   Serial.begin(115200);
 
@@ -56,7 +41,7 @@ void setup3()
   tft.setRotation(1);
 }
 
-void loop2(void)
+void loop_graphic(void)
 {
   Serial.println(F("Benchmark                Time (microseconds)"));
 

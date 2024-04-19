@@ -4,7 +4,10 @@
 void setup()
 {
   Serial.begin(115200);
-
+  while (!Serial)
+    ;
+  delay(100);
+  Serial.println("Serial.begin() called.");
   const int freq = 5000;
   const int ledChannel = 0;
   const int resolution = 8;
@@ -18,6 +21,5 @@ void setup()
 void loop(void)
 {
   loop_i2s();
-  Serial.println("loop...");
-  // delay(1000);
+  // Serial.println("loop...");
 }
