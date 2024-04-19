@@ -21,13 +21,13 @@ byte colPins[COLS] = {10, 11, 12, 13, 14};     // connect to the column pinouts 
 // initialize an instance of class NewKeypad
 Adafruit_Keypad customKeypad = Adafruit_Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-void setup()
+void setup_key()
 {
   Serial.begin(115200);
   customKeypad.begin();
 }
 
-void loop()
+void loop_key()
 {
   // put your main code here, to run repeatedly:
   customKeypad.tick();

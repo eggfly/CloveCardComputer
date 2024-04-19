@@ -27,7 +27,7 @@ ESP32-S3R8 with 8MB internal Octal SPI PSRAM, 32MB external QIO Flash.
 | SD_CS   | IO42 | SD 片选 |
 | I2C_SDA | IO43 | 原来是 U0TXD，现在是 SDA，外部上拉 |
 | I2C_SCL | IO44 | 原来是 U0RXD，现在是 SCL，外部上拉 |
-| LCD_BL  | IO45 | 屏幕背光，默认开机下拉，常亮，使用封装内 PSRAM，不再起到 SPI_VDD 控制作用 |
+| LCD_BL  | IO45 | 屏幕背光，默认开机下拉，常亮，使用封装内 PSRAM，不再起到 VDD_SPI 控制作用 |
 | SD_MODE  | IO46 | MAX98357 SD_MODE，默认开机下拉，控制左右声道和静音，详情见 MAX98357 手册 |
 | I2S_BCK | IO47 | I2S BCK |
 | I2S_LRCK | IO48 | I2S LRCK |
@@ -41,9 +41,9 @@ ESP32-S3R8 with 8MB internal Octal SPI PSRAM, 32MB external QIO Flash.
 | AXP2101 | 52 (0x34) | 电源 IC |
 
 ## Key map
-| Key | COL1 | COL2 | COL3 | COL4 | COL5 | 左/右 | COL1 | COL2 | COL3 | COL4 | COL5 |
+| 左半边 | COL1 | COL2 | COL3 | COL4 | COL5 | 右半边 | COL1 | COL2 | COL3 | COL4 | COL5 |
 | --  |  --  |  --  |  --  |  --  |  --  | -- |  --  |  --  |  --  |  --  |  --  |
 | ROW1 | 1 | 2 | 3 | 4 | 5 | ROW5 | 6 | 7 | 8 | 9 | 0 |
 | ROW2 | Q | W | E | R | T | ROW6 | Y | U | I | O | P |
-| ROW3 | A | S | D | F | G | ROW7 | H | J | K | L | 上 |
-| ROW4 | Z | X | C | V | B | ROW8 | N | M | 左 | 下 | 右 |
+| ROW3 | A | S | D | F | G | ROW7 | H | J | K | L | UP |
+| ROW4 | Z | X | C | V | B | ROW8 | N | M | LEFT | DOWN | RIGHT |
