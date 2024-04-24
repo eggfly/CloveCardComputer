@@ -15,11 +15,11 @@ void setup()
   ledcAttachPin(45, ledChannel);
   ledcWrite(ledChannel, 230);
 
-  setup_i2s();
+  setup_graphic();
 }
 
 void loop(void)
 {
-  loop_i2s();
+  loop_graphic();
   // Serial.println("loop...");
 }
