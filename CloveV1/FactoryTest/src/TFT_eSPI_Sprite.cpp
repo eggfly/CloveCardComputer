@@ -13,6 +13,11 @@
 #include "rm67162.h"
 #include <TFT_eSPI.h>   //https://github.com/Bodmer/TFT_eSPI
 #include "true_color.h"
+#include "pins_config.h"
+#include "res.h"
+
+#include <U8g2lib.h>
+#include <Arduino_GFX_Library.h>
 
 #if ARDUINO_USB_CDC_ON_BOOT != 1
 #warning "If you need to monitor printed data, be sure to set USB CDC On boot to ENABLE, otherwise you will not see any data in the serial monitor"
@@ -22,12 +27,14 @@
 #error "Detected that PSRAM is not turned on. Please set PSRAM to OPI PSRAM in ArduinoIDE"
 #endif
 
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite spr = TFT_eSprite(&tft);
-
-
 #define WIDTH  536
 #define HEIGHT 240
+
+TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite spr = TFT_eSprite(&tft);
+Arduino_Canvas *gfx = new Arduino_Canvas(WIDTH /* width */, HEIGHT /* height */, nullptr);
+
+
 unsigned long targetTime = 0;
 byte red = 31;
 byte green = 0;
@@ -44,11 +51,34 @@ void setup_amoled()
   lcd_setRotation(1);
   spr.createSprite(WIDTH, HEIGHT);
   spr.setSwapBytes(1);
+  // need this to malloc buffer (in PSRAM)
+  gfx->begin();
+  gfx->setRotation(0);
+  printf("setup_amoled() finished.\n");
+}
+
+const uint8_t CHINESE_FONT_HEIGHT = 16;
+
+void gfx_test() {
+  gfx->fillScreen(0x0);
+  gfx->draw16bitRGBBitmap((WIDTH - 240) / 2, 0, (uint16_t *)apple_music_240x240_map, 240, 240);
+
+  gfx->setUTF8Print(true);
+  gfx->setFont(u8g2_font_unifont_t_chinese);
+  gfx->setTextSize(2);
+  gfx->setTextColor(RGB565(0x00, 0xFF, 0x00));
+  gfx->setCursor(1, CHINESE_FONT_HEIGHT);
+  gfx->println("Console32 - 音乐播放器\n（支持 mp3、flac、aac）");
 }
 
 void loop_amoled()
 {
   spr.pushImage(0, 0, WIDTH, HEIGHT, (uint16_t *)gImage_true_color);
+  gfx_test();
+  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)gfx->getFramebuffer());
+  // eggfly
+  return;
+  
   lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
   delay(2000);
 
