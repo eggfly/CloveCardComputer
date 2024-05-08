@@ -68,11 +68,12 @@ This ESP32-S3 card computer includes:
 
 | Device | Address | 备注 |
 | -- | -- | -- |
-| PCF8563 | 81 (0x51) | RTC 时钟 |
-| AXP2101 | 52 (0x34) | 电源 IC |
-| PCF8563 | 0x51 | RTC |
-| MPU | 0x68 | BMI270 运动传感器 (BMI2_I2C_PRIM_ADDR) |
-| BME280 | 0x77 | (0x76) 气压传感器 (BMP280_I2C_ADDRESS_1) |
+| AXP2101 | 52 (0x34)  | 电源 IC |
+| SHT30   | 68 (0x44)  | 温湿度传感器 |
+| PCF8563 | 81 (0x51)  | RTC 时钟 |
+| AW9523  | 91 (0x5B)  | AW9523 IO扩展器 (0b1011011) |
+| BMI270  | 104 (0x68) |  运动传感器 (BMI2_I2C_PRIM_ADDR) |
+| BME280  | 119 (0x77) | (0x76) 气压传感器 (BMP280_I2C_ADDRESS_1) |
 
 ```C
 #define BMP280_I2C_ADDRESS_0  0x76 //!< I2C address when SDO pin is low
