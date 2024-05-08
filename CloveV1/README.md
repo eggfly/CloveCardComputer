@@ -59,7 +59,7 @@ This ESP32-S3 card computer includes:
 | -- | -- |
 | AXP Power Button | 顶部按钮2,通过I2C和IRQ读取 |
 | Charge LED | 通过I2C读取或者控制 |
-| ALDO1 | 默认1.8V，控制SD_MODE |
+| ALDO1 | 默认1.8V，控制SD_MODE<br> > 1.4V: LEFT_MODE<br>0.77-1.4V: RIGHT_MODE<br>0.16-0.77V: LEFT/2+RIGHT/2<br>< 0.16V: Shutdown |
 | ALDO2 | 默认关闭，控制Q10键盘背光 |
 | ALDO3 | 默认3.3V，给PCM5102的DVDD和AVDD的LDO供电 |
 
@@ -85,7 +85,6 @@ This ESP32-S3 card computer includes:
 
 Pinout:
 ```
-
     GND   1 | 28  GND
 MIC_VDD   2 | 27  ROW7
     MIC   3 | 26  LEDA 1 & 2
