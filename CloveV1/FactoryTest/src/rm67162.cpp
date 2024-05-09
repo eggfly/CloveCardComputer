@@ -125,6 +125,13 @@ void rm67162_init(void)
 
 }
 
+
+void lcd_setBrightness(uint8_t brightness)
+{
+  // lcd_send_cmd(0xb0, &brightness, 1);
+  lcd_send_cmd(0x51, &brightness, 1);
+}
+
 void lcd_setRotation(uint8_t r)
 {
     uint8_t gbr = TFT_MAD_RGB;

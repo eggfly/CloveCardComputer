@@ -6,18 +6,18 @@
    @date      2023-06-14
 
 */
-
-#include <Wire.h>
 #include <Arduino.h>
-
 #include "rm67162.h"
 #include <TFT_eSPI.h>   //https://github.com/Bodmer/TFT_eSPI
 #include "true_color.h"
-#include "pins_config.h"
-#include "res.h"
 
-#include <U8g2lib.h>
-#include <Arduino_GFX_Library.h>
+#include "binaryttf_small.h"
+#include <OpenFontRender.h>
+
+#define WIDTH 536
+#define HEIGHT 240
+
+#define RGB565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
 
 #if ARDUINO_USB_CDC_ON_BOOT != 1
 #warning "If you need to monitor printed data, be sure to set USB CDC On boot to ENABLE, otherwise you will not see any data in the serial monitor"
@@ -27,12 +27,14 @@
 #error "Detected that PSRAM is not turned on. Please set PSRAM to OPI PSRAM in ArduinoIDE"
 #endif
 
+TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite spr = TFT_eSprite(&tft);
+
+
 #define WIDTH  536
 #define HEIGHT 240
 
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite spr = TFT_eSprite(&tft);
-Arduino_Canvas *gfx = new Arduino_Canvas(WIDTH /* width */, HEIGHT /* height */, nullptr);
+OpenFontRender render;
 
 
 unsigned long targetTime = 0;
@@ -42,45 +44,92 @@ byte blue = 0;
 byte state = 0;
 unsigned int colour = red << 11;
 
-unsigned int rainbow(uint8_t value);
 void drawRainbow();
+unsigned int rainbow(uint8_t value);
+
+uint8_t brightness = 0xA0;
 
 void setup_amoled()
 {
+  /*
+    Compatible with touch version
+    Touch version, IO38 is the screen power enable
+    Non-touch version, IO38 is an onboard LED light
+  * * */
+  // pinMode(PIN_LED, OUTPUT);
+  // digitalWrite(PIN_LED, HIGH);
+  pinMode(0, INPUT);
   rm67162_init();
   lcd_setRotation(1);
   spr.createSprite(WIDTH, HEIGHT);
   spr.setSwapBytes(1);
-  // need this to malloc buffer (in PSRAM)
-  gfx->begin();
-  gfx->setRotation(0);
-  printf("setup_amoled() finished.\n");
-}
+  // delay(5000);
+  lcd_setBrightness(brightness);
+  render.setSerial(Serial);
+  render.showFreeTypeVersion();
+  render.showCredit();
 
-const uint8_t CHINESE_FONT_HEIGHT = 16;
+  if (render.loadFont(binaryttf, sizeof(binaryttf)))
+  {
+    Serial.println("Render initialize error");
+    return;
+  }
+  else
+  {
+    // TODO: 下面会让背景变绿，有点问题
+    render.setDrawer(spr); // Set drawer object
+    // eggfly
+    unsigned long t_start = millis();
+    render.setFontSize(10);
+    render.setFontColor(TFT_WHITE, TFT_BLACK);
+    render.printf("Hello World\n");
+    render.seekCursor(0, 0);
+    render.setFontSize(30);
+    render.setFontColor(TFT_GREEN,TFT_BLACK);
+    render.printf("完全なUnicodeサポート\n");
+    render.seekCursor(0, 0);
 
-void gfx_test() {
-  gfx->fillScreen(0x0);
-  gfx->draw16bitRGBBitmap((WIDTH - 240) / 2, 0, (uint16_t *)apple_music_240x240_map, 240, 240);
+    render.setFontSize(40);
+    render.setFontColor(TFT_ORANGE,TFT_BLACK);
+    render.printf("こんにちは世界\n");
 
-  gfx->setUTF8Print(true);
-  gfx->setFont(u8g2_font_unifont_t_chinese);
-  gfx->setTextSize(2);
-  gfx->setTextColor(RGB565(0x00, 0xFF, 0x00));
-  gfx->setCursor(1, CHINESE_FONT_HEIGHT);
-  gfx->println("Console32 - 音乐播放器\n（支持 mp3、flac、aac）");
+    render.setFontSize(48);
+    render.setFontColor(TFT_PURPLE,TFT_BLACK);
+    render.printf("Clove 电脑 - 音乐播放器\n（支持 mp3、flac、aac）\n");
+
+    unsigned long t_end = millis();
+    Serial.printf("Time: %ld ms\n", t_end - t_start);
+    // finally flush
+    lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+    delay(5000);
+  }
+  Serial.println("setup() done");
 }
 
 void loop_amoled()
 {
   spr.pushImage(0, 0, WIDTH, HEIGHT, (uint16_t *)gImage_true_color);
-  gfx_test();
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)gfx->getFramebuffer());
-  // eggfly
-  return;
-  
+  // spr.pushImage((536 - 480) / 2, 0, 480, 240, (uint16_t *)nc1020);
+
+  // spr.pushImage(0, 0, 256, 240, (uint16_t *)mario);
+  // spr.pushImage(0 + 536 / 2, 0, 256, 240, (uint16_t *)mario);
+  // Finally send buffer to screen
   lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
-  delay(2000);
+  // if (!digitalRead(0)) {
+  //   Serial.println("press");
+  //   lcd_setBrightness(brightness);
+  //   // lcd_setHBMMode(true);
+  //   if (brightness == 0) {
+  //     brightness = 0x60;
+  //   } else {
+  //     brightness = 0;
+  //   }
+  //   printf("brightness done\n");
+  //   delay(100);
+  // }
+  // delay(10);
+  // return;
+  delay(3000);
 
   spr.fillSprite(TFT_BLACK);
 

@@ -12,6 +12,9 @@
 #define TFT_MAD_MH 0x04
 #define TFT_MAD_RGB 0x00
 
+#define TFT_INVOFF 0x20
+#define TFT_INVON 0x21
+
 #define TFT_RES_H digitalWrite(TFT_RES, 1);
 #define TFT_RES_L digitalWrite(TFT_RES, 0);
 
@@ -30,6 +33,7 @@ void rm67162_init(void);
 // Set the display window size
 void lcd_address_set(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 void lcd_setRotation(uint8_t r);
+void lcd_setBrightness(uint8_t brightness);
 void lcd_DrawPoint(uint16_t x, uint16_t y, uint16_t color);
 void lcd_fill(uint16_t xsta,
               uint16_t ysta,
