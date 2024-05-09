@@ -11,7 +11,7 @@
 #include <TFT_eSPI.h>   //https://github.com/Bodmer/TFT_eSPI
 #include "true_color.h"
 
-#include "binaryttf_small.h"
+#include "FZLanTingHeiS-L-GB-Regular-binaryttf.h"
 #include <OpenFontRender.h>
 
 #define WIDTH 536
@@ -76,9 +76,10 @@ void setup_amoled()
   }
   else
   {
-    // TODO: 下面会让背景变绿，有点问题
     render.setDrawer(spr); // Set drawer object
-    // eggfly
+    // 设置startWrite和endWrite是空操作，否则背景变绿，有点问题
+    render.set_startWrite([&](void) { });
+    render.set_endWrite([&](void) { });
     unsigned long t_start = millis();
     render.setFontSize(10);
     render.setFontColor(TFT_WHITE, TFT_BLACK);
@@ -101,7 +102,7 @@ void setup_amoled()
     Serial.printf("Time: %ld ms\n", t_end - t_start);
     // finally flush
     lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
-    delay(5000);
+    delay(8000);
   }
   Serial.println("setup() done");
 }
