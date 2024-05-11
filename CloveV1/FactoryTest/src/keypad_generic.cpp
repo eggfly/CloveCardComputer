@@ -1,4 +1,5 @@
 #include "Adafruit_Keypad.h"
+#include "app.h"
 
 const byte ROWS = 7; // rows
 const byte COLS = 5; // columns
@@ -14,7 +15,7 @@ char keys[ROWS][COLS] = {
 };
 
 byte rowPins[ROWS] = {1, 2, 3, 4, 5, 6, 7}; // connect to the row pinouts of the keypad
-byte colPins[COLS] = {10, 11, 12, 13, 14};     // connect to the column pinouts of the keypad
+byte colPins[COLS] = {10, 11, 12, 13, 14};  // connect to the column pinouts of the keypad
 
 // initialize an instance of class NewKeypad
 Adafruit_Keypad customKeypad = Adafruit_Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
@@ -35,18 +36,20 @@ void loop_keypad()
     Serial.print((char)e.bit.KEY);
     if (e.bit.EVENT == KEY_JUST_PRESSED)
     {
-      Serial.print(" pressed");
+      printf(" pressed");
       uint8_t row = e.bit.ROW;
       uint8_t col = e.bit.COL;
-      Serial.print(" row: ");
+      printf(" row: ");
       Serial.print(row);
-      Serial.print(" col: ");
+      printf(" col: ");
       Serial.print(col);
-      Serial.println();
+      printf("\n");
     }
     else if (e.bit.EVENT == KEY_JUST_RELEASED)
     {
       Serial.println(" released");
+      render.printf("%c", e.bit.KEY);
+      lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
     }
   }
 

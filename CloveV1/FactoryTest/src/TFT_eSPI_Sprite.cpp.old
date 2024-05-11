@@ -19,7 +19,7 @@
 //#include <U8g2lib.h>
 //#include <Arduino_GFX_Library.h>
 
-#include "binaryttf_small.h"
+// #include "binaryttf_small.h"
 #include <OpenFontRender.h>
 
 #define RGB565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
@@ -74,7 +74,7 @@ void setup_amoled()
   render.showCredit();
   if (render.loadFont(binaryttf, sizeof(binaryttf)))
   {
-    Serial.println("Render initialize error");
+    printf("Render initialize error\n");
     return;
   }
   else

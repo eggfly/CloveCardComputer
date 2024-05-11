@@ -34,7 +34,7 @@ void setup_pmu()
   bool result = PMU.begin(Wire, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
 
   if (result == false) {
-    Serial.println("PMU is not online...");
+    printf("PMU is not online...\n");
     while (1) {
       delay(50);
     }
@@ -56,7 +56,7 @@ void setup_pmu()
   //   if (targetVol != vol)Serial.println(">>> FAILED!");
   //   vol += 100;
   // }
-  Serial.println("AXP2101 Power Initialized.");
+  printf("AXP2101 Power Initialized.\n");
 }
 
 void loop_pmu()
