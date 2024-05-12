@@ -30,13 +30,15 @@ void setup()
 {
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0);
+  delay(1000);
   delay(100);
   printf("Serial.begin() called.\n");
   mmap_font_partition();
   setup_pmu();
-  setup_amoled();
   setup_aw9523();
   setup_keypad();
+  setup_spm1423();
+  setup_amoled();
 }
 
 void loop(void)
@@ -45,5 +47,5 @@ void loop(void)
   loop_keypad();
   // Serial.println("loop...");
   // loop_amoled();
-  delay(10);
+  loop_spm1423();
 }

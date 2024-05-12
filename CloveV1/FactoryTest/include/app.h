@@ -4,6 +4,7 @@
 #include <TFT_eSPI.h> //https://github.com/Bodmer/TFT_eSPI
 #include <OpenFontRender.h>
 #include "rm67162.h"
+#include <Arduino_GFX_Library.h>
 
 #include <esp_partition.h>
 
@@ -30,5 +31,10 @@ void setup_aw9523();
 void loop_aw9523();
 
 const esp_partition_t* find_partition(esp_partition_type_t type, esp_partition_subtype_t subtype, const char* name);
+
+void swapBytes(uint8_t *input, uint8_t *output, int size);
+
+void setup_spm1423();
+void loop_spm1423();
 
 #endif // APP_H

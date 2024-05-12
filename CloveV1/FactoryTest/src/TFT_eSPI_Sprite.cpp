@@ -11,6 +11,9 @@
 #include <TFT_eSPI.h> //https://github.com/Bodmer/TFT_eSPI
 #include "true_color.h"
 #include "app.h"
+#include "res.h"
+
+#include <Arduino_GFX_Library.h>
 
 // #include "binaryttf_small.h"
 // #include "GenSenRounded-R-binaryttf.h"
@@ -31,6 +34,10 @@
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite spr = TFT_eSprite(&tft);
+
+Arduino_Canvas *gfx = new Arduino_Canvas(WIDTH /* width */, HEIGHT /* height */, nullptr);
+
+uint8_t *swappedBuffer;
 
 OpenFontRender render;
 
@@ -60,11 +67,22 @@ void setup_amoled()
   * * */
   // pinMode(PIN_LED, OUTPUT);
   // digitalWrite(PIN_LED, HIGH);
-  pinMode(0, INPUT);
+  // pinMode(0, INPUT);
   rm67162_init();
   lcd_setRotation(1);
   spr.createSprite(WIDTH, HEIGHT);
   spr.setSwapBytes(1);
+  gfx->begin();
+  gfx->setRotation(0);
+  swappedBuffer = (uint8_t *)ps_malloc(WIDTH * HEIGHT * 2);
+  if (swappedBuffer)
+  {
+    printf("swappedBuffer=%p\n", swappedBuffer);
+  }
+  else
+  {
+    printf("buffer malloc failed.\n");
+  }
   // delay(5000);
   lcd_setBrightness(brightness);
   render.set_printFunc([&](const char *msg)
@@ -91,9 +109,8 @@ void setup_amoled()
   render.set_endWrite([&](void) {});
   unsigned long t_start = millis();
   printf("space ratio = %lf\n", render.getLineSpaceRatio());
-  render.setLineSpaceRatio(0.85);
+  render.setLineSpaceRatio(0.80);
   printf("new space ratio = %lf\n", render.getLineSpaceRatio());
-
   render.setFontSize(12);
   render.setFontColor(TFT_WHITE, TFT_BLACK);
   render.printf("Hello World\n");
@@ -140,8 +157,14 @@ void setup_amoled()
   unsigned long t_end = millis();
   printf("Time: %ld ms\n", t_end - t_start);
   // finally flush
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
-  delay(1000);
+  gfx->fillScreen(TFT_GREEN);
+  gfx->draw16bitRGBBitmap((WIDTH - 240) / 2, 0, (uint16_t *)apple_music_240x240_map, 240, 240);
+  unsigned long start = millis();
+  swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, WIDTH * HEIGHT * 2);
+  printf("swapBuffer cost %lu\n", millis() - start);
+  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)swappedBuffer);
+  // lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+  delay(5000);
 
   printf("setup() done\n");
 }
