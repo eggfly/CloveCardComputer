@@ -12,14 +12,14 @@
 #define TFT_MAD_MH 0x04
 #define TFT_MAD_RGB 0x00
 
-#define TFT_INVOFF 0x20
-#define TFT_INVON 0x21
+// #define TFT_INVOFF 0x20
+// #define TFT_INVON 0x21
 
 #define TFT_RES_H digitalWrite(TFT_RES, 1);
 #define TFT_RES_L digitalWrite(TFT_RES, 0);
 
-#define TFT_CS_H digitalWrite(TFT_CS, 1);
-#define TFT_CS_L digitalWrite(TFT_CS, 0);
+#define TFT_CS_H digitalWrite(MY_TFT_CS, 1);
+#define TFT_CS_L digitalWrite(MY_TFT_CS, 0);
 
 typedef struct
 {

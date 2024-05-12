@@ -64,7 +64,7 @@ static void lcd_send_cmd(uint32_t cmd, uint8_t *dat, uint32_t len)
 
 void rm67162_init(void)
 {
-    pinMode(TFT_CS, OUTPUT);
+    pinMode(MY_TFT_CS, OUTPUT);
     pinMode(TFT_RES, OUTPUT);
 
     TFT_RES_L;
@@ -90,7 +90,7 @@ void rm67162_init(void)
         .command_bits = 8,
         .address_bits = 24,
         .mode = TFT_SPI_MODE,
-        .clock_speed_hz = SPI_FREQUENCY,
+        .clock_speed_hz = MY_SPI_FREQUENCY,
         .spics_io_num = -1,
         // .spics_io_num = TFT_QSPI_CS,
         .flags = SPI_DEVICE_HALFDUPLEX,
