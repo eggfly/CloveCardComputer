@@ -13,6 +13,8 @@
 #include "app.h"
 #include "res.h"
 
+#include "music_player_536_240.h"
+
 #include <Arduino_GFX_Library.h>
 
 // #include "binaryttf_small.h"
@@ -157,8 +159,8 @@ void setup_amoled()
   unsigned long t_end = millis();
   printf("Time: %ld ms\n", t_end - t_start);
   // finally flush
-  gfx->fillScreen(TFT_GREEN);
-  gfx->draw16bitRGBBitmap((WIDTH - 240) / 2, 0, (uint16_t *)apple_music_240x240_map, 240, 240);
+  // gfx->fillScreen(TFT_GREEN);
+  gfx->draw16bitRGBBitmap(0, 0, (uint16_t *)music_player_536_240, 536, 240);
   unsigned long start = millis();
   swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, WIDTH * HEIGHT * 2);
   printf("swapBuffer cost %lu\n", millis() - start);

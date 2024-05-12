@@ -62,6 +62,7 @@ This ESP32-S3 card computer includes:
 | ALDO1 | 默认1.8V，控制SD_MODE<br> > 1.4V: LEFT_MODE<br>0.77-1.4V: RIGHT_MODE<br>0.16-0.77V: LEFT/2+RIGHT/2<br>< 0.16V: Shutdown |
 | ALDO2 | 默认关闭，控制Q10键盘背光 |
 | ALDO3 | 默认3.3V，给PCM5102的DVDD和AVDD的LDO供电 |
+| AW9523 | P0_0 - P0_4 分别接五向开关的 TOP, LEFT, RIGHT, DOWN, PRESSED |
 
 ## I2C Addresses
 
@@ -153,3 +154,9 @@ This part describes the way the Blackberry phone used the keyboard, might be a g
 [5] https://www.hirose.com/product/en/products/BM14/BM14B%280.8%29-24DS-0.4V%2853%29/  
 [6] https://help.blackberry.com/en/blackberry-q10/10.3.1/help/mar1396885531697.html  
 [7] https://help.blackberry.com/en/blackberry-q10/10.3.1/help/mba1343750483597.html   
+
+### LLM
+* https://www.bilibili.com/video/BV1rZ42187Ki/
+* git@github.com:MetaWu2077/Esp32_VoiceChat_LLMs.git
+* https://www.bilibili.com/video/BV1xz421S7d6/
+* https://github.com/MetaWu2077/Esp32_VoiceChat_LLMs/tree/main
