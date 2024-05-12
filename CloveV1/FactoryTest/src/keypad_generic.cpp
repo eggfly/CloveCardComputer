@@ -52,6 +52,4 @@ void loop_keypad()
       lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
     }
   }
-
-  delay(10);
 }

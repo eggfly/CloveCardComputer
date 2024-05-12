@@ -60,6 +60,13 @@ const void *font_map_ptr;
 const size_t font1_size = 8429388;
 const size_t font2_size = 4625768;
 
+void flush_screen()
+{
+  swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, WIDTH * HEIGHT * 2);
+  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)swappedBuffer);
+  // lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+}
+
 void setup_amoled()
 {
   /*

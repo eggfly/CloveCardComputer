@@ -1,13 +1,12 @@
 
 
-#define XPOWERS_CHIP_AXP2101
+
+#include "XPowersLib.h"
 
 #include <Wire.h>
 #include <Arduino.h>
-#include "XPowersLib.h"
 
-
-XPowersPMU PMU;
+XPowersAXP2101 PMU;
 
 #ifndef CONFIG_PMU_SDA
 #define CONFIG_PMU_SDA 43
@@ -25,17 +24,19 @@ const uint8_t i2c_sda = CONFIG_PMU_SDA;
 const uint8_t i2c_scl = CONFIG_PMU_SCL;
 const uint8_t pmu_irq_pin = CONFIG_PMU_IRQ;
 
-uint16_t targetVol;
-uint16_t vol = 0;
+#define BL_MIN_VOLTAGE 2500
 
+uint16_t vol = BL_MIN_VOLTAGE;
 
 void setup_pmu()
 {
   bool result = PMU.begin(Wire, AXP2101_SLAVE_ADDRESS, i2c_sda, i2c_scl);
 
-  if (result == false) {
+  if (result == false)
+  {
     printf("PMU is not online...\n");
-    while (1) {
+    while (1)
+    {
       delay(50);
     }
   }
@@ -43,22 +44,28 @@ void setup_pmu()
   // Disable SPEAKER by default.
   PMU.disableALDO1();
 
-  // PMU.enableALDO2();
+  // Enable Q10 backlight
+  PMU.enableALDO2();
 
-  //ALDO2 IMAX=300mA
-  //500~3500mV, 100mV/step,31steps
-  // uint16_t vol = 500;
-  // for (int i = 0; i < 31; ++i) {
-  //   PMU.setALDO2Voltage(vol);
-  //   delay(1);
-  //   targetVol = PMU.getALDO2Voltage();
-  //   Serial.printf("[%u]ALDO2  :%s   Voltage:%u mV \n", i,  PMU.isEnableALDO2()  ? "ENABLE" : "DISABLE", targetVol );
-  //   if (targetVol != vol)Serial.println(">>> FAILED!");
-  //   vol += 100;
-  // }
   printf("AXP2101 Power Initialized.\n");
 }
 
 void loop_pmu()
 {
+  // ALDO2 IMAX=300mA
+  // 500~3500mV, 100mV/step,31steps
+  PMU.setALDO2Voltage(vol);
+  delay(1);
+  uint16_t targetVol = PMU.getALDO2Voltage();
+  printf("ALDO2  :%s   Voltage:%u mV \n", PMU.isEnableALDO2() ? "ENABLE" : "DISABLE", targetVol);
+  if (targetVol != vol)
+  {
+    Serial.println(">>> FAILED!");
+  }
+  vol += 100;
+  if (vol >= 3300)
+  {
+    vol = BL_MIN_VOLTAGE;
+  }
+  delay(500);
 }

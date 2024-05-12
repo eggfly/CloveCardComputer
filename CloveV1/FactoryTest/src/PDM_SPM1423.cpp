@@ -14,6 +14,7 @@
 #define PIN_DATA 0
 
 #define MODE_MIC 0
+#define MIC_I2S_CHANNEL I2S_NUM_0
 
 static QueueHandle_t fftvalueQueue = nullptr;
 static QueueHandle_t i2sstateQueue = nullptr;
@@ -39,7 +40,7 @@ typedef struct
 
 bool InitI2SSpakerOrMic(int mode)
 {
-    i2s_driver_uninstall(I2S_NUM_0);
+    i2s_driver_uninstall(MIC_I2S_CHANNEL);
     i2s_config_t i2s_config = {
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
         .sample_rate = SAMPLE_RATE,
@@ -61,7 +62,7 @@ bool InitI2SSpakerOrMic(int mode)
     }
 
     printf("Init i2s_driver_install, idf=%d.%d\n", ESP_IDF_VERSION_MAJOR, ESP_IDF_VERSION_MINOR);
-    ESP_ERROR_CHECK(i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL));
+    ESP_ERROR_CHECK(i2s_driver_install(MIC_I2S_CHANNEL, &i2s_config, 0, NULL));
     i2s_pin_config_t pin_config;
 #if (ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 3, 0))
     pin_config.mck_io_num = I2S_PIN_NO_CHANGE;
@@ -72,9 +73,9 @@ bool InitI2SSpakerOrMic(int mode)
     pin_config.data_in_num = PIN_DATA;
 
     // Serial.println("Init i2s_set_pin");
-    ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_0, &pin_config));
+    ESP_ERROR_CHECK(i2s_set_pin(MIC_I2S_CHANNEL, &pin_config));
     // Serial.println("Init i2s_set_clk");
-    ESP_ERROR_CHECK(i2s_set_clk(I2S_NUM_0, SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO));
+    ESP_ERROR_CHECK(i2s_set_clk(MIC_I2S_CHANNEL, SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO));
 
     return true;
 }
@@ -108,7 +109,7 @@ static void i2sMicroFFTtask(void *arg)
         {
             fft_config_t *real_fft_plan =
                 fft_init(1024, FFT_REAL, FFT_FORWARD, NULL, NULL);
-            i2s_read(I2S_NUM_0, (char *)microRawData, 2048, &bytesread,
+            i2s_read(MIC_I2S_CHANNEL, (char *)microRawData, 2048, &bytesread,
                      (100 / portTICK_RATE_MS));
             buffptr = (int16_t *)microRawData;
 

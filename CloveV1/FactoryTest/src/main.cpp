@@ -39,13 +39,16 @@ void setup()
   setup_keypad();
   setup_spm1423();
   setup_amoled();
+  setup_music_player();
 }
 
 void loop(void)
 {
+  // loop_pmu();
   loop_aw9523();
   loop_keypad();
   // Serial.println("loop...");
   // loop_amoled();
-  loop_spm1423();
+  // loop_spm1423();
+  loop_music_player();
 }

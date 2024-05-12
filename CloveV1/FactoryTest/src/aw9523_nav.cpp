@@ -22,33 +22,38 @@ void setup_aw9523()
   // aw.enableInterrupt(ButtonPin, true);
 }
 
+unsigned long last_update_time = 0;
+bool keypad_states[5];
+
 void loop_aw9523()
 {
-  bool values[5] = {
-      aw.digitalRead(0),
-      aw.digitalRead(1),
-      aw.digitalRead(2),
-      aw.digitalRead(3),
-      aw.digitalRead(4),
-  };
+  if (millis() - last_update_time < 50)
+  {
+    return;
+  }
+  last_update_time = millis();
+  for (uint8_t i = 0; i < 5; i++)
+  {
+    keypad_states[i] = !aw.digitalRead(i);
+  }
   bool hasKey = true;
-  if (!values[0])
+  if (keypad_states[0])
   {
     printf("top");
   }
-  else if (!values[1])
+  else if (keypad_states[1])
   {
     printf("left");
   }
-  else if (!values[2])
+  else if (keypad_states[2])
   {
     printf("right");
   }
-  else if (!values[3])
+  else if (keypad_states[3])
   {
     printf("down");
   }
-  else if (!values[4])
+  else if (keypad_states[4])
   {
     printf("press");
   }
@@ -60,6 +65,4 @@ void loop_aw9523()
   {
     printf("\n");
   }
-
-  delay(50);
 }
