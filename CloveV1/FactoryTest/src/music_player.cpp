@@ -525,6 +525,7 @@ void setup_music_player()
   {
     drawText("NO TF CARD?", 100, 100, RGB565(255, 127, 127));
     flush_screen();
+    Serial.println(F("NO TF CARD?"));
     delay(3000);
     for (;;)
       ;
