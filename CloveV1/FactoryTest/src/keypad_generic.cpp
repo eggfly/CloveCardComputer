@@ -23,13 +23,13 @@ Adafruit_Keypad customKeypad = Adafruit_Keypad(makeKeymap(keys), rowPins, colPin
 void setup_keypad()
 {
   customKeypad.begin();
+  printf("setup_keypad\n");
 }
 
 void loop_keypad()
 {
   // put your main code here, to run repeatedly:
   customKeypad.tick();
-
   while (customKeypad.available())
   {
     keypadEvent e = customKeypad.read();
@@ -48,8 +48,8 @@ void loop_keypad()
     else if (e.bit.EVENT == KEY_JUST_RELEASED)
     {
       Serial.println(" released");
-      render.printf("%c", e.bit.KEY);
-      lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+      // render.printf("%c", e.bit.KEY);
+      // lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
     }
   }
 }
