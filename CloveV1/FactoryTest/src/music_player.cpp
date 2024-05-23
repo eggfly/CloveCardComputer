@@ -263,7 +263,7 @@ void gamepad_isr_new()
   gamepad_changed = true;
 }
 
-uint8_t volume = 4;
+uint8_t volume = 18;
 
 typedef struct
 {

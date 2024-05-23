@@ -42,7 +42,8 @@ void setup_pmu()
   }
 
   // Disable SPEAKER by default.
-  PMU.disableALDO1();
+  // PMU.disableALDO1();
+  PMU.enableALDO1();
 
   // Enable Q10 backlight
   PMU.enableALDO2();
