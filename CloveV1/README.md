@@ -1,4 +1,4 @@
-# New Version of Clove Card Computer
+# Version 1 of Clove Card Computer
 
 ## Hardware
 
