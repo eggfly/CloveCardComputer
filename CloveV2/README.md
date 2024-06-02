@@ -61,27 +61,25 @@ TODO: CHANGE
 
 | Function | 备注 |
 | -- | -- |
-| AXP Power Button | 顶部按钮2,通过I2C和IRQ读取 |
+| AXP Power Button | 按钮2,通过I2C和IRQ读取 |
 | Charge LED | 通过I2C读取或者控制 |
-| ALDO1 | 默认1.8V，控制SD_MODE<br> > 1.4V: LEFT_MODE<br>0.77-1.4V: RIGHT_MODE<br>0.16-0.77V: LEFT/2+RIGHT/2<br>< 0.16V: Shutdown |
-| ALDO2 | 默认关闭，控制Q10键盘背光 |
 | ALDO3 | 默认3.3V，给PCM5102的DVDD和AVDD的LDO供电 |
 
 
 ## I2C Addresses
 
 
-| Device | Address | 备注 |
-| -- | -- | -- |
-| RDA5807M | 16 (0x10), 17 (0x11), 96 (0x60) | FM Radio |
-| AXP2101 | 52 (0x34)  | 电源 IC |
-| TCA8418 | 52 (0x34)  | Keyboard scan IC; 注: 和AXP2101一样，需要另一个I2C总线 |
-| FT3168  | 56 (0x38)  | Screen Touch IC |
-| INA219  | 64 (0x40)  | Current sensor |
-| SHT30   | 68 (0x44)  | 温湿度传感器 |
-| PCF8563 | 81 (0x51)  | RTC 时钟 |
-| BMI270  | 104 (0x68) |  运动传感器 (BMI2_I2C_PRIM_ADDR) |
-| BME280  | 119 (0x77) | (0x76) 气压传感器 (BMP280_I2C_ADDRESS_1) |
+| Device | Address |  Bus | 备注 |
+| -- | -- | -- | -- |
+| RDA5807M | 16 (0x10), 17 (0x11), 96 (0x60) | I2C0 | FM Radio |
+| AXP2101 | 52 (0x34)  | I2C0 | 电源 IC |
+| TCA8418 | 52 (0x34)  | I2C1 | Keyboard scan IC; 注: 和AXP2101一样，需要另一个I2C总线 |
+| FT3168  | 56 (0x38)  | I2C0 | Screen Touch IC |
+| INA219  | 64,65 (0x40, 0x41)  | I2C0 | Current sensor |
+| SHT30   | 68 (0x44)  | I2C1 | 温湿度传感器 |
+| PCF8563 | 81 (0x51)  | I2C0 | RTC 时钟 |
+| BMI270  | 104 (0x68) | I2C1 | 运动传感器 (BMI2_I2C_PRIM_ADDR) |
+| BME280  | 119 (0x77) | I2C1 | (0x76) 气压传感器 (BMP280_I2C_ADDRESS_1) |
 
 ```C
 #define BMP280_I2C_ADDRESS_0  0x76 //!< I2C address when SDO pin is low
