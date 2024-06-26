@@ -68,18 +68,27 @@ TODO: CHANGE
 
 ## I2C Addresses
 
+### I2C0: SDA=2, SCL=3
+
 
 | Device | Address |  Bus | 备注 |
 | -- | -- | -- | -- |
 | RDA5807M | 16 (0x10), 17 (0x11), 96 (0x60) | I2C0 | FM Radio |
+| ? | 32 (0x20) | I2C0 | ? |
 | AXP2101 | 52 (0x34)  | I2C0 | 电源 IC |
-| TCA8418 | 52 (0x34)  | I2C1 | Keyboard scan IC; 注: 和AXP2101一样，需要另一个I2C总线 |
 | FT3168  | 56 (0x38)  | I2C0 | Screen Touch IC |
 | INA219  | 64,65 (0x40, 0x41)  | I2C0 | Current sensor |
-| SHT30   | 68 (0x44)  | I2C1 | 温湿度传感器 |
 | PCF8563 | 81 (0x51)  | I2C0 | RTC 时钟 |
-| BMI270  | 104 (0x68) | I2C1 | 运动传感器 (BMI2_I2C_PRIM_ADDR) |
-| BME280  | 119 (0x77) | I2C1 | (0x76) 气压传感器 (BMP280_I2C_ADDRESS_1) |
+
+
+
+### I2C1: SDA=43, SCL=44
+
+| Device | Address |  Bus | 备注 |
+| -- | -- | -- | -- |
+| RDA5807M | 16 (0x10), 17 (0x11), 96 (0x60) | I2C0 | FM Radio |
+| TCA8418 | 52 (0x34)  | I2C1 | Keyboard scan IC; 注: 和AXP2101一样，需要另一个I2C总线 |
+
 
 ```C
 #define BMP280_I2C_ADDRESS_0  0x76 //!< I2C address when SDO pin is low
