@@ -4,6 +4,7 @@
 #include <TFT_eSPI.h> //https://github.com/Bodmer/TFT_eSPI
 #include <OpenFontRender.h>
 #include <Arduino_GFX_Library.h>
+#include <RDA5807M.h>
 
 #include <esp_partition.h>
 
@@ -33,8 +34,19 @@ void loop_amoled();
 
 void swapBytes(uint8_t *input, uint8_t *output, int size);
 
+void setup_i2c();
+void loop_i2c(TwoWire &wire);
+
+
 
 void flush_screen();
+
+void setup_rda5807m();
+void loop_rda5807m();
+
+
+void setup_ina219(bool isVbusOrVbat);
+void loop_ina219(bool isVbusOrVbat);
 
 enum
 {

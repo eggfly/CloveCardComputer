@@ -40,12 +40,15 @@ void setup_pmu()
     }
   }
 
-  // Disable SPEAKER by default.
-  // PMU.disableALDO1();
-  PMU.enableALDO1();
+  // Shutdown SPEAKER
+  PMU.disableALDO1();
 
-  // Enable Q10 backlight
   PMU.enableALDO2();
+
+  // Because BLDO2 Input is DC3, Set The Voltage to 3.3V
+  PMU.setDC3Voltage(3300);
+
+  PMU.enableBLDO2();
 
   printf("AXP2101 Power Initialized.\n");
 

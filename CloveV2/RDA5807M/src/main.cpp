@@ -11,19 +11,18 @@
 static const char *TAG = "main";
 
 
-void setup_i2c();
-void loop_i2c(TwoWire &wire);
-
 void setup()
 {
   setup_pmu();
   setup_i2c();
+  setup_rda5807m();
+  setup_ina219(true);
+  setup_ina219(false);
 }
 
 void loop(void)
 {
-  delay(5000);
-  loop_i2c(Wire);
-  loop_i2c(Wire1);
-  Serial.println("\n\n");
+  loop_rda5807m();
+  loop_ina219(true);
+  loop_ina219(false);
 }
