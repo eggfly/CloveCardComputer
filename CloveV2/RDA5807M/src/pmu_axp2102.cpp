@@ -47,7 +47,7 @@ void setup_pmu()
 
   // Because BLDO2 Input is DC3, Set The Voltage to 3.3V
   PMU.setDC3Voltage(3300);
-
+  // AUDIO_SEL as FM Input
   PMU.enableBLDO2();
 
   printf("AXP2101 Power Initialized.\n");

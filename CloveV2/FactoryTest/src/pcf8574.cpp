@@ -6,6 +6,11 @@
  * a built in pull-up 'resistor' on each input, but no pull-down resistor capability.
  */
 
+bool keypad_states[5];
+
+
+
+
 Adafruit_PCF8574 pcf;
 
 // P0: BTN_UP

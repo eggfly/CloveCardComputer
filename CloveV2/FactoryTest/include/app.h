@@ -7,6 +7,8 @@
 #include <Arduino_GFX_Library.h>
 #include <Adafruit_PCF8574.h>
 #include <esp_partition.h>
+#include <ESP32Encoder.h>
+#include <RDA5807M.h>
 
 #define XPOWERS_CHIP_AXP2101
 #include "XPowersLib.h"
@@ -50,6 +52,16 @@ void flush_screen();
 
 void setup_ft3168();
 void loop_ft3168();
+
+extern RDA5807M radio;
+
+void setup_rda5807m();
+void loop_rda5807m();
+void loop_radio_ui();
+
+extern ESP32Encoder encoder;
+
+void setup_encoder();
 
 enum
 {

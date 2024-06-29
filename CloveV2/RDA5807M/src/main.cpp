@@ -21,13 +21,8 @@ void setup()
   setup_encoder();
 }
 
-static int32_t prev_encoder_count = 0;
-void loop(void)
-{
-  // loop_pmu();
-  loop_rda5807m();
-  // loop_ina219(true);
-  // loop_ina219(false);
+void loop_radio_tuner() {
+  static int32_t prev_encoder_count = 0;
   int32_t count = static_cast<int32_t>(encoder.getCount() / 2);
   if (count != prev_encoder_count)
   {
@@ -46,4 +41,13 @@ void loop(void)
     }
     Serial.printf("count=%d, freq=%.1fMHz, new=%.1fMHz\n", count, fCurr / 100.0, fNew / 100.0);
   }
+}
+
+void loop(void)
+{
+  // loop_pmu();
+  loop_rda5807m();
+  // loop_ina219(true);
+  // loop_ina219(false);
+  loop_radio_tuner();
 }

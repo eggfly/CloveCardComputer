@@ -35,7 +35,8 @@ void setup()
   printf("Serial.begin() called.\n");
   mmap_font_partition();
   setup_pmu();
-  
+  setup_encoder();
+
   // setup_spm1423();
   setup_pcf8574();
   pcf.digitalWrite(PCF8574_TP_RST, HIGH);
@@ -49,7 +50,35 @@ void setup()
   setup_ft3168();
   setup_amoled();
   setup_music_player();
+  pinMode(0, INPUT_PULLUP);
   // test_amoled();
+}
+
+bool isFM = false;
+bool fmInitialized = false;
+
+#define VDD_FM_VOLTAGE 3300
+
+void loop_radio_tuner() {
+  static int32_t prev_encoder_count = 0;
+  int32_t count = static_cast<int32_t>(encoder.getCount() / 2);
+  if (count != prev_encoder_count)
+  {
+    int32_t diff = count - prev_encoder_count;
+    // Serial.printf("count=%d, diff=%d\n", count, diff);
+    prev_encoder_count = count;
+    auto fMin = radio.getMinFrequency();
+    auto fMax = radio.getMaxFrequency();
+    auto step = radio.getFrequencyStep();
+    auto fCurr = radio.getFrequency();
+    auto fNew = fCurr + diff * step;
+    fNew = constrain(fNew, fMin, fMax);
+    if (fNew != fCurr)
+    {
+      radio.setFrequency(fNew);
+    }
+    Serial.printf("count=%d, freq=%.1fMHz, new=%.1fMHz\n", count, fCurr / 100.0, fNew / 100.0);
+  }
 }
 
 void loop(void)
@@ -60,5 +89,34 @@ void loop(void)
   loop_ft3168();
   // loop_touch_amoled();
   // loop_spm1423();
-  loop_music_player();
+  auto bootPinState = digitalRead(0);
+  if (bootPinState == LOW)
+  {
+    isFM = !isFM;
+    Serial.println(isFM ? "Switch to FM" : "Switch to Music Player");
+  }
+  if (isFM)
+  {
+    if (!fmInitialized)
+    {
+      fmInitialized = true;
+      
+      PMU.setALDO4Voltage(VDD_FM_VOLTAGE);
+      PMU.enableALDO4();
+
+      // Because BLDO2 Input is DC3, Set The Voltage to 3.3V
+      PMU.setDC3Voltage(3300);
+      // AUDIO_SEL as FM Input
+      PMU.enableBLDO2();
+
+      setup_rda5807m();
+    }
+    loop_rda5807m();
+    loop_radio_tuner();
+    loop_radio_ui();
+  }
+  else
+  {
+    loop_music_player();
+  }
 }

@@ -42,8 +42,8 @@ void setup_pmu()
   }
 
   // Disable SPEAKER by default.
-  // PMU.disableALDO1();
-  PMU.enableALDO1();
+  PMU.disableALDO1();
+  // PMU.enableALDO1();
 
   PMU.enableALDO2();
 
