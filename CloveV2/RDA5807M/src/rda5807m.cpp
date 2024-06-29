@@ -35,18 +35,19 @@
 #include <RDA5807M.h>
 #include <RDSParser.h>
 
+// 87.00
 // 87.5 音乐
-// 北京新闻广播 FM94.5
-// 102.5
+// 88.30
+// 88.70 HitFM
+// 90.5 环球资讯
+// 北京新闻广播 FM94.5 -> 信号最强
+// FM97.4 北京音乐广播
+// 102.5 北京体育广播
 // 104.8
-// 105.20
+// 105.20 河北人民广播电台
 // 106.10 带 RDS
 // 107.30 北京城市广播副中心之声
 // 100.60 京津冀之声 MONO
-// 87.00
-// 88.30
-// 88.70 HitFM
-// 90.5
 
 /*
    北京电台,
@@ -96,7 +97,7 @@ RDA5807M radio;  ///< Create an instance of a RDA5807 chip radio
 /// get a RDS parser
 RDSParser rds;
 
-const auto INITIAL_FREQUENCY = 8870;
+const auto INITIAL_FREQUENCY = 9450;
 const auto INITIAL_VOLUME = 0; // 0 -> Still have a little sound.
 
 /// State of Keyboard input for this radio implementation.
@@ -120,7 +121,7 @@ String lastServiceName;
 // use a function in between the radio chip and the RDS parser
 // to catch the block1 value (used for sender identification)
 void RDS_process(uint16_t block1, uint16_t block2, uint16_t block3, uint16_t block4) {
-  // Serial.printf("RDS: 0x%04x 0x%04x 0x%04x 0x%04x\n", block1, block2, block3, block4);
+  Serial.printf("RDS: 0x%04x 0x%04x 0x%04x 0x%04x\n", block1, block2, block3, block4);
   g_block1 = block1;
   rds.processData(block1, block2, block3, block4);
 }
@@ -439,8 +440,8 @@ void setup_rda5807m() {
   // setup the information chain for RDS data.
   radio.attachReceiveRDS(RDS_process);
   rds.attachServiceNameCallback(DisplayServiceName);
-  // rds.attachTextCallback(DisplayText);
-  // rds.attachTimeCallback(DisplayTime);
+  rds.attachTextCallback(DisplayText);
+  rds.attachTimeCallback(DisplayTime);
 
   runSerialCommand('?', 0);
   kbState = STATE_PARSECOMMAND;

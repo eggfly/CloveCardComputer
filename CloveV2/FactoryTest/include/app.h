@@ -26,18 +26,12 @@ extern Adafruit_PCF8574 pcf;
 
 extern int32_t tp_fingers_count, tp_x1, tp_y1, tp_x2, tp_y2;
 
-void setup_keypad();
-void loop_keypad();
-
 void setup_pmu();
 void loop_pmu();
 
 void setup_amoled();
 void loop_touch_amoled();
 void test_amoled();
-
-void setup_aw9523();
-void loop_aw9523();
 
 void setup_pcf8574();
 void loop_pcf8574();

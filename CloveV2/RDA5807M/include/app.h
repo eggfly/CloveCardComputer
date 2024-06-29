@@ -52,7 +52,7 @@ void setup_ina219(bool isVbusOrVbat);
 void loop_ina219(bool isVbusOrVbat);
 
 void setup_encoder();
-void loop_encoder();
+void loop_encoder_no_need();
 
 enum
 {

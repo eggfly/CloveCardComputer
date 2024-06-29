@@ -35,8 +35,7 @@ void setup()
   printf("Serial.begin() called.\n");
   mmap_font_partition();
   setup_pmu();
-  // setup_aw9523();
-  // setup_keypad();
+  
   // setup_spm1423();
   setup_pcf8574();
   pcf.digitalWrite(PCF8574_TP_RST, HIGH);
@@ -49,18 +48,17 @@ void setup()
 
   setup_ft3168();
   setup_amoled();
-  // setup_music_player();
+  setup_music_player();
   // test_amoled();
 }
 
 void loop(void)
 {
   // loop_pmu();
-  // loop_aw9523();
-  // loop_keypad();
+  loop_pcf8574();
   // Serial.println("loop...");
   loop_ft3168();
-  loop_touch_amoled();
+  // loop_touch_amoled();
   // loop_spm1423();
-  // loop_music_player();
+  loop_music_player();
 }

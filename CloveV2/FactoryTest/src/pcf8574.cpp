@@ -1,6 +1,6 @@
 #include <Adafruit_PCF8574.h>
 #include <clove_pin_config.h>
-
+#include <app.h>
 /* Example for 8 input buttons that are connected from the GPIO expander pins to ground.
  * Note the buttons must be connected with the other side of the switch to GROUND. There is
  * a built in pull-up 'resistor' on each input, but no pull-down resistor capability.
@@ -40,12 +40,14 @@ void loop_pcf8574()
 {
     for (uint8_t p = 0; p < 4; p++)
     {
-        if (!pcf.digitalRead(p))
+        auto state = pcf.digitalRead(p);
+        if (!state)
         {
             Serial.print("Button on GPIO #");
             Serial.print(p);
             Serial.println(" pressed!");
         }
+        keypad_states[p] = !state;
     }
-    delay(10); // a short debounce delay
+    // delay(10); // a short debounce delay
 }

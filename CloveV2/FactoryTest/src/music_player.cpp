@@ -263,7 +263,7 @@ void gamepad_isr_new()
   gamepad_changed = true;
 }
 
-uint8_t volume = 18;
+uint8_t volume = 1;
 
 typedef struct
 {
@@ -529,7 +529,7 @@ void setup_music_player()
     delay(1000);
     for (;;) {
       // only for keyboard factory test
-      loop_keypad();
+      // loop_keypad();
       delay(10);
     }
     // ESP.restart();

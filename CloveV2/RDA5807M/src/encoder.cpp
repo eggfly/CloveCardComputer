@@ -1,8 +1,8 @@
 #include <ESP32Encoder.h> // https://github.com/madhephaestus/ESP32Encoder.git
 #include <Arduino.h>
 
-#define CLK 12 // CLK ENCODER
-#define DT 13  // DT ENCODER
+#define CLK 13 // CLK ENCODER
+#define DT 12  // DT ENCODER
 
 ESP32Encoder encoder;
 
@@ -15,7 +15,7 @@ void setup_encoder()
 static unsigned long update_time = 0;
 static int64_t prev_position = 0;
 
-void loop_encoder()
+void loop_encoder_no_need()
 {
     if (update_time + 10 < millis())
     {
