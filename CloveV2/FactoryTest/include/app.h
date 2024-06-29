@@ -47,6 +47,9 @@ void loop_music_player();
 
 void flush_screen();
 
+void setup_ft3168();
+void loop_ft3168();
+
 enum
 {
     GAMEPAD_UP = 0,
