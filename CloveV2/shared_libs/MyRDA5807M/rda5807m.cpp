@@ -411,7 +411,6 @@ void runSerialCommand(char cmd, int16_t value) {
 /// Setup a FM only radio configuration with I/O for commands and debugging on the Serial port.
 void setup_rda5807m() {
   // open the Serial port
-  delay(1000);
   Serial.println("ScanRadio...");
   delay(200);
 
