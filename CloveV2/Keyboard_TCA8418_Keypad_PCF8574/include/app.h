@@ -4,8 +4,6 @@
 #include <TFT_eSPI.h> //https://github.com/Bodmer/TFT_eSPI
 #include <OpenFontRender.h>
 #include <Arduino_GFX_Library.h>
-#include <RDA5807M.h>
-#include <ESP32Encoder.h>
 
 #include <esp_partition.h>
 
@@ -15,8 +13,6 @@
 #define WIDTH 536
 #define HEIGHT 240
 
-extern ESP32Encoder encoder;
-extern RDA5807M radio;
 extern TFT_eSprite spr;
 extern OpenFontRender render;
 extern const void *font_map_ptr;
@@ -34,25 +30,16 @@ void loop_pmu();
 void setup_amoled();
 void loop_amoled();
 
+void setup_tca8418();
+void loop_tca8418();
+
+void setup_pcf8574();
+void loop_pcf8574();
 
 void swapBytes(uint8_t *input, uint8_t *output, int size);
 
-void setup_i2c();
-void loop_i2c(TwoWire &wire);
-
-
 
 void flush_screen();
-
-void setup_rda5807m();
-void loop_rda5807m();
-
-
-void setup_ina219(bool isVbusOrVbat);
-void loop_ina219(bool isVbusOrVbat);
-
-void setup_encoder();
-void loop_encoder();
 
 enum
 {
