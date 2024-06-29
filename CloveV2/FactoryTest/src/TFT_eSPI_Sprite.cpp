@@ -10,7 +10,7 @@
 #include "rm67162.h"
 #include <TFT_eSPI.h> //https://github.com/Bodmer/TFT_eSPI
 #include "true_color.h"
-#include "app.h"
+#include <app.h>
 #include "res.h"
 
 #include "music_player_536_240.h"
@@ -102,11 +102,11 @@ void setup_amoled()
 
   if (font_map_ptr && !render.loadFont((const unsigned char *)font_map_ptr, font2_size))
   {
-    printf("Render initialized font(%dKB) from partition OK!\n", font2_size / 1024);
+    printf("Font initialized font(%dKB) from partition OK!\n", font2_size / 1024);
   }
   else
   {
-    printf("Render initialize error\n");
+    printf("Font initialize error.\n");
     return;
   }
 
@@ -173,12 +173,27 @@ void setup_amoled()
   printf("swapBuffer cost %lu\n", millis() - start);
   lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)swappedBuffer);
   // lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
-  delay(5000);
+  // delay(1000);
+  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
 
   printf("setup() done\n");
 }
 
-void loop_amoled()
+void loop_touch_amoled()
+{
+  if (tp_fingers_count >= 1)
+  {
+    gfx->fillCircle(tp_x1, tp_y1, 5, TFT_MAGENTA);
+  }
+  if (tp_fingers_count >= 2)
+  {
+    gfx->fillCircle(tp_x2, tp_y2, 5, TFT_ORANGE);
+  }
+
+  flush_screen();
+}
+
+void test_amoled()
 {
   spr.pushImage(0, 0, WIDTH, HEIGHT, (uint16_t *)gImage_true_color);
   // spr.pushImage((536 - 480) / 2, 0, 480, 240, (uint16_t *)nc1020);

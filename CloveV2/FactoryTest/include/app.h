@@ -5,7 +5,7 @@
 #include <OpenFontRender.h>
 #include "rm67162.h"
 #include <Arduino_GFX_Library.h>
-
+#include <Adafruit_PCF8574.h>
 #include <esp_partition.h>
 
 #define XPOWERS_CHIP_AXP2101
@@ -22,6 +22,9 @@ extern XPowersAXP2101 PMU;
 extern Arduino_Canvas *gfx;
 
 extern bool keypad_states[5];
+extern Adafruit_PCF8574 pcf;
+
+extern int32_t tp_fingers_count, tp_x1, tp_y1, tp_x2, tp_y2;
 
 void setup_keypad();
 void loop_keypad();
@@ -30,10 +33,14 @@ void setup_pmu();
 void loop_pmu();
 
 void setup_amoled();
-void loop_amoled();
+void loop_touch_amoled();
+void test_amoled();
 
 void setup_aw9523();
 void loop_aw9523();
+
+void setup_pcf8574();
+void loop_pcf8574();
 
 const esp_partition_t *find_partition(esp_partition_type_t type, esp_partition_subtype_t subtype, const char *name);
 

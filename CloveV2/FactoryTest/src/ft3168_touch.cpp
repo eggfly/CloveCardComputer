@@ -1,3 +1,4 @@
+#include <app.h>
 
 // IIC
 #define IIC_SDA 2
@@ -5,7 +6,7 @@
 
 // TOUCH
 #define TP_INT 10
-#define TP_RST 8
+#define NO_TP_RST -1
 
 #include "Arduino_DriveBus_Library.h"
 
@@ -17,7 +18,7 @@ std::shared_ptr<Arduino_IIC_DriveBus> IIC_Bus =
 void Arduino_IIC_Touch_Interrupt(void);
 
 std::unique_ptr<Arduino_IIC> FT3168(new Arduino_FT3x68(IIC_Bus, FT3168_DEVICE_ADDRESS,
-                                                       TP_RST, TP_INT, Arduino_IIC_Touch_Interrupt));
+                                                       NO_TP_RST, TP_INT, Arduino_IIC_Touch_Interrupt));
 
 void Arduino_IIC_Touch_Interrupt(void)
 {
@@ -62,8 +63,10 @@ void setup_ft3168()
     //                                10);
 
     Serial.printf("ID: %#X \n\n", (int32_t)FT3168->IIC_Read_Device_ID());
-    delay(1000);
+    delay(500);
 }
+
+int32_t tp_fingers_count = 0, tp_x1 = 0, tp_y1 = 0, tp_x2 = 0, tp_y2 = 0;
 
 void loop_ft3168()
 {
@@ -77,8 +80,8 @@ void loop_ft3168()
 
         Serial.printf("\nGesture:%s\n",
                       (FT3168->IIC_Read_Device_State(FT3168->Arduino_IIC_Touch::Status_Information::TOUCH_GESTURE_ID)).c_str());
-        auto fingers_count = (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH_FINGER_NUMBER);
-        Serial.printf("Fingers count:%d\n", fingers_count);
+        tp_fingers_count = (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH_FINGER_NUMBER);
+        Serial.printf("Fingers count:%d\n", tp_fingers_count);
 
         Serial.printf("Touch X:%d Y:%d\n",
                       (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH_COORDINATE_X),
@@ -87,11 +90,16 @@ void loop_ft3168()
         auto y1 = (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH1_COORDINATE_Y);
         auto x2 = (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH2_COORDINATE_X);
         auto y2 = (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH2_COORDINATE_Y);
-        Serial.printf("\nTouch X1:%d Y1:%d\n", x1, y1);
-        Serial.printf("Touch X2:%d Y2:%d\n", x2, y2);
+        // CONVERT TO TFT COORDINATE
+        tp_x1 = y1;
+        tp_y1 = HEIGHT - x1;
+        tp_x2 = y2;
+        tp_y2 = HEIGHT - x2;
+        Serial.printf("\nTouch X1:%d Y1:%d\n", tp_x1, tp_y1);
+        Serial.printf("Touch X2:%d Y2:%d\n", tp_x2, tp_y2);
     }
 
-    delay(20);
+    delay(2);
 
     if (millis() > CycleTime)
     {

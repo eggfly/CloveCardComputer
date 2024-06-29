@@ -10,6 +10,7 @@
 
 #include <Arduino.h>
 #include <app.h>
+#include <clove_pin_config.h>
 
 static const char *TAG = "main";
 
@@ -30,17 +31,26 @@ void setup()
 {
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0);
-  delay(1000);
-  delay(100);
+  delay(10);
   printf("Serial.begin() called.\n");
   mmap_font_partition();
   setup_pmu();
   // setup_aw9523();
   // setup_keypad();
   // setup_spm1423();
+  setup_pcf8574();
+  pcf.digitalWrite(PCF8574_TP_RST, HIGH);
+  pcf.digitalWrite(PCF8574_TP_RST, LOW);
+  pcf.digitalWrite(PCF8574_TP_RST, HIGH);
+
+  pcf.digitalWrite(PCF8574_LCD_RST, HIGH);
+  pcf.digitalWrite(PCF8574_LCD_RST, LOW);
+  pcf.digitalWrite(PCF8574_LCD_RST, HIGH);
+
   setup_ft3168();
   setup_amoled();
   // setup_music_player();
+  // test_amoled();
 }
 
 void loop(void)
@@ -49,8 +59,8 @@ void loop(void)
   // loop_aw9523();
   // loop_keypad();
   // Serial.println("loop...");
-  // loop_amoled();
   loop_ft3168();
+  loop_touch_amoled();
   // loop_spm1423();
   // loop_music_player();
 }

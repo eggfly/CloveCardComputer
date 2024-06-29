@@ -28,11 +28,8 @@
 #include "./power_chip/Arduino_ETA4662.h"
 #include "./power_chip/Arduino_SY6970.h"
 
-#include "./touch_chip/Arduino_CST816x.h"
-#include "./touch_chip/Arduino_CST2xxSE.h"
 #include "./touch_chip/Arduino_FT3x68.h"
 
 #include "./iis_chip/Arduino_MEMS.h"
 #include "./iis_chip/Arduino_Amplifier.h"
 
-#include "./imu_chip/Arduino_LSM6DSL.h"
