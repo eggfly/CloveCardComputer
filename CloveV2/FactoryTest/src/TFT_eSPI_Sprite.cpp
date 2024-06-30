@@ -53,7 +53,8 @@ unsigned int colour = red << 11;
 void drawRainbow();
 unsigned int rainbow(uint8_t value);
 
-uint8_t brightness = 0xC0;
+// uint8_t brightness = 0xC0;
+uint8_t brightness = 0x60;
 
 const void *font_map_ptr;
 
@@ -92,7 +93,7 @@ void setup_amoled()
   {
     printf("buffer malloc failed.\n");
   }
-  // delay(5000);
+
   lcd_setBrightness(brightness);
   render.set_printFunc([&](const char *msg)
                        { printf(msg); });

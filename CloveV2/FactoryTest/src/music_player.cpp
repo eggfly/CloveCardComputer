@@ -102,7 +102,7 @@ const bool APP_DEBUG = false;
 // #define TFT_BACKLIGHT 45
 // #define VBAT_PIN 33
 
-uint8_t brightness_level = 6;
+uint8_t brightness_level = 3;
 PROGMEM const uint8_t brightness_levels[] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 255};
 const uint8_t brightness_level_size = sizeof(brightness_levels) / sizeof(brightness_levels[0]);
 
@@ -126,16 +126,6 @@ bool gamepad_changed = false;
 
 // float p = 3.1415926;
 
-void lcd_set_brightness(uint8_t level)
-{
-  return;
-  if (level < brightness_level_size)
-  {
-    uint8_t brightness = brightness_levels[level];
-    Serial.printf("lcd_set_brightness: level=%d, value=%d\n", level, brightness);
-    ledcWrite(0, 255 - brightness);
-  }
-}
 
 Audio audio(false, 3, I2S_NUM_1);
 
@@ -519,7 +509,6 @@ void setup_music_player()
   Serial.println(sd_ret);
 
   drawScreen();
-  lcd_set_brightness(brightness_level);
 
   if (sd_ret != 1)
   {

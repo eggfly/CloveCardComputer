@@ -42,10 +42,8 @@ void setup_pmu()
   }
 
   // Disable SPEAKER by default.
-  PMU.disableALDO1();
-  // PMU.enableALDO1();
-
-  PMU.enableALDO2();
+  // PMU.disableALDO1();
+  PMU.enableALDO1();
 
   printf("AXP2101 Power Initialized.\n");
 }

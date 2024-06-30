@@ -52,10 +52,14 @@ void setup()
   setup_music_player();
   pinMode(0, INPUT_PULLUP);
   // test_amoled();
+  // Prepare for BLDO2
+  PMU.setDC3Voltage(3300);
+
 }
 
 bool isFM = false;
 bool fmInitialized = false;
+#define FM_INITIAL_VOLUME 8
 
 #define VDD_FM_VOLTAGE 3300
 
@@ -81,6 +85,8 @@ void loop_radio_tuner() {
   }
 }
 
+bool audioSelToFM = false;
+
 void loop(void)
 {
   // loop_pmu();
@@ -97,6 +103,12 @@ void loop(void)
   }
   if (isFM)
   {
+    if (!audioSelToFM) {
+      audioSelToFM = true;
+      PMU.enableBLDO2();
+      // Because BLDO2 Input is DC3, Set The Voltage to 3.3V
+      // AUDIO_SEL as FM Input
+    }
     if (!fmInitialized)
     {
       fmInitialized = true;
@@ -104,12 +116,8 @@ void loop(void)
       PMU.setALDO4Voltage(VDD_FM_VOLTAGE);
       PMU.enableALDO4();
 
-      // Because BLDO2 Input is DC3, Set The Voltage to 3.3V
-      PMU.setDC3Voltage(3300);
-      // AUDIO_SEL as FM Input
-      PMU.enableBLDO2();
-
       setup_rda5807m();
+      radio.setVolume(FM_INITIAL_VOLUME);
     }
     loop_rda5807m();
     loop_radio_tuner();
@@ -117,6 +125,11 @@ void loop(void)
   }
   else
   {
+    if (audioSelToFM) {
+      audioSelToFM = false;
+      PMU.disableBLDO2();
+      // AUDIO_SEL as Music Player Input
+    }
     loop_music_player();
   }
 }
