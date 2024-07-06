@@ -71,7 +71,7 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
                          uint8_t w, uint8_t h, uint8_t draw_mode)
 {
   // no need to draw at all of we're offscreen
-  if (x + w <= 0 || x > WIDTH - 1 || y + h <= 0 || y > HEIGHT - 1)
+  if (x + w <= 0 || x > ARDUBOY2_WIDTH - 1 || y + h <= 0 || y > ARDUBOY2_HEIGHT - 1)
     return;
 
   if (bitmap == NULL)
@@ -96,8 +96,8 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
   }
 
   // if the right side of the render is offscreen skip those loops
-  if (x + w > WIDTH - 1) {
-    rendered_width = ((WIDTH - x) - xOffset);
+  if (x + w > ARDUBOY2_WIDTH - 1) {
+    rendered_width = ((ARDUBOY2_WIDTH - x) - xOffset);
   } else {
     rendered_width = (w - xOffset);
   }
@@ -112,8 +112,8 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
   loop_h = h / 8 + (h % 8 > 0 ? 1 : 0); // divide, then round up
 
   // if (sRow + loop_h - 1 > (HEIGHT/8)-1)
-  if (sRow + loop_h > (HEIGHT / 8)) {
-    loop_h = (HEIGHT / 8) - sRow;
+  if (sRow + loop_h > (ARDUBOY2_HEIGHT / 8)) {
+    loop_h = (ARDUBOY2_HEIGHT / 8) - sRow;
   }
 
   // prepare variables for loops later so we can compare with 0
@@ -121,7 +121,7 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
   loop_h -= start_h;
 
   sRow += start_h;
-  ofs = (sRow * WIDTH) + x + xOffset;
+  ofs = (sRow * ARDUBOY2_WIDTH) + x + xOffset;
   uint8_t *bofs = (uint8_t *)bitmap + (start_h * w) + xOffset;
   uint8_t data;
 
@@ -148,17 +148,17 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
             Arduboy2Base::sBuffer[ofs] = data;
           }
           if (yOffset != 0 && sRow < 7) {
-            data = Arduboy2Base::sBuffer[ofs + WIDTH];
+            data = Arduboy2Base::sBuffer[ofs + ARDUBOY2_WIDTH];
             data &= (*((unsigned char *) (&mask_data) + 1));
             data |= (*((unsigned char *) (&bitmap_data) + 1));
-            Arduboy2Base::sBuffer[ofs + WIDTH] = data;
+            Arduboy2Base::sBuffer[ofs + ARDUBOY2_WIDTH] = data;
           }
           ofs++;
           bofs++;
         }
         sRow++;
         bofs += w - rendered_width;
-        ofs += WIDTH - rendered_width;
+        ofs += ARDUBOY2_WIDTH - rendered_width;
       }
       break;
 
@@ -170,14 +170,14 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
             Arduboy2Base::sBuffer[ofs] |= (uint8_t)(bitmap_data);
           }
           if (yOffset != 0 && sRow < 7) {
-            Arduboy2Base::sBuffer[ofs + WIDTH] |= (*((unsigned char *) (&bitmap_data) + 1));
+            Arduboy2Base::sBuffer[ofs + ARDUBOY2_WIDTH] |= (*((unsigned char *) (&bitmap_data) + 1));
           }
           ofs++;
           bofs++;
         }
         sRow++;
         bofs += w - rendered_width;
-        ofs += WIDTH - rendered_width;
+        ofs += ARDUBOY2_WIDTH - rendered_width;
       }
       break;
 
@@ -189,14 +189,14 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
             Arduboy2Base::sBuffer[ofs]  &= ~(uint8_t)(bitmap_data);
           }
           if (yOffset != 0 && sRow < 7) {
-            Arduboy2Base::sBuffer[ofs + WIDTH] &= ~(*((unsigned char *) (&bitmap_data) + 1));
+            Arduboy2Base::sBuffer[ofs + ARDUBOY2_WIDTH] &= ~(*((unsigned char *) (&bitmap_data) + 1));
           }
           ofs++;
           bofs++;
         }
         sRow++;
         bofs += w - rendered_width;
-        ofs += WIDTH - rendered_width;
+        ofs += ARDUBOY2_WIDTH - rendered_width;
       }
       break;
 
@@ -223,10 +223,10 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
             Arduboy2Base::sBuffer[ofs] = data;
           }
           if (yOffset != 0 && sRow < 7) {
-            data = Arduboy2Base::sBuffer[ofs + WIDTH];
+            data = Arduboy2Base::sBuffer[ofs + ARDUBOY2_WIDTH];
             data &= (*((unsigned char *) (&mask_data) + 1));
             data |= (*((unsigned char *) (&bitmap_data) + 1));
-            Arduboy2Base::sBuffer[ofs + WIDTH] = data;
+            Arduboy2Base::sBuffer[ofs + ARDUBOY2_WIDTH] = data;
           }
           ofs++;
           mask_ofs++;
@@ -235,7 +235,7 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
         sRow++;
         bofs += w - rendered_width;
         mask_ofs += w - rendered_width;
-        ofs += WIDTH - rendered_width;
+        ofs += ARDUBOY2_WIDTH - rendered_width;
       }
       break;
 
@@ -284,7 +284,7 @@ void Sprites::drawBitmap(int16_t x, int16_t y,
    uint8_t * buffer_ofs_2 = (buffer_ofs + 128);
 
     const uint8_t sprite_ofs_jump = ((w - rendered_width) * 2);
-   const uint8_t buffer_ofs_jump = (WIDTH - rendered_width);
+   const uint8_t buffer_ofs_jump = (ARDUBOY2_WIDTH - rendered_width);
 
     for(uint8_t yi = loop_h; yi > 0; --yi)
    {

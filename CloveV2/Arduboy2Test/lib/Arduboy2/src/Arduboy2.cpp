@@ -9,9 +9,7 @@
 #include "ab_logo.c"
 #include "glcdfont.c"
 
-
 extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
-
 
 #ifdef ADAFRUIT
 extern Adafruit_MCP23017 mcp;
@@ -19,9 +17,9 @@ extern Adafruit_MCP4725 dac;
 #endif
 
 #ifndef ESP8266
-//#declare TIMER_COUNT 16;
-//unsigned long timers[TIMER_COUNT] fps;
-//int8_t timerNumber = 0;
+// #declare TIMER_COUNT 16;
+// unsigned long timers[TIMER_COUNT] fps;
+// int8_t timerNumber = 0;
 static uint64_t lastTime = 0;
 static uint64_t currentTime = 0;
 static uint64_t frameTime = 0;
@@ -62,21 +60,23 @@ void Arduboy2Base::stop()
 void Arduboy2Base::begin()
 {
   boot(); // raw hardware
+  Serial.println("after boot...");
   clear();
-  display();    // blank the display (sBuffer is global, so cleared automatically)
-  //flashlight(); // light the RGB LED and screen if UP button is being held.
-  // check for and handle buttons held during start up for system control
-  //systemButtons();
-  //audio.begin();
-  // bootLogo(); Doesn't display correctly, just disabling
-  // alternative logo functions. Work the same as bootLogo() but may reduce
-  // memory size if the sketch uses the same bitmap drawing function
-  //  bootLogoCompressed();
-  //  bootLogoSpritesSelfMasked();
-  //  bootLogoSpritesOverwrite();
-  //  bootLogoSpritesBSelfMasked();
-  //  bootLogoSpritesBOverwrite();
-  //waitNoButtons(); // wait for all buttons to be release
+  Serial.println("before display...");
+  display(); // blank the display (sBuffer is global, so cleared automatically)
+  // flashlight(); // light the RGB LED and screen if UP button is being held.
+  //  check for and handle buttons held during start up for system control
+  // systemButtons();
+  // audio.begin();
+  //  bootLogo(); Doesn't display correctly, just disabling
+  //  alternative logo functions. Work the same as bootLogo() but may reduce
+  //  memory size if the sketch uses the same bitmap drawing function
+  //   bootLogoCompressed();
+  //   bootLogoSpritesSelfMasked();
+  //   bootLogoSpritesOverwrite();
+  //   bootLogoSpritesBSelfMasked();
+  //   bootLogoSpritesBOverwrite();
+  // waitNoButtons(); // wait for all buttons to be release
 }
 
 void Arduboy2Base::flashlight()
@@ -310,7 +310,7 @@ void Arduboy2Base::initRandomSeed()
 void Arduboy2Base::drawPixel(int16_t x, int16_t y, uint8_t color)
 {
 #ifdef PIXEL_SAFE_MODE
-  if (x < 0 || x > (WIDTH - 1) || y < 0 || y > (HEIGHT - 1))
+  if (x < 0 || x > (ARDUBOY2_WIDTH - 1) || y < 0 || y > (ARDUBOY2_HEIGHT - 1))
   {
     return;
   }
@@ -320,11 +320,11 @@ void Arduboy2Base::drawPixel(int16_t x, int16_t y, uint8_t color)
 
   if (color)
   {
-    sBuffer[(row * WIDTH) + (uint8_t)x] |= _BV((uint8_t)y % 8);
+    sBuffer[(row * ARDUBOY2_WIDTH) + (uint8_t)x] |= _BV((uint8_t)y % 8);
   }
   else
   {
-    sBuffer[(row * WIDTH) + (uint8_t)x] &= ~_BV((uint8_t)y % 8);
+    sBuffer[(row * ARDUBOY2_WIDTH) + (uint8_t)x] &= ~_BV((uint8_t)y % 8);
   }
 }
 
@@ -333,7 +333,7 @@ uint8_t Arduboy2Base::getPixel(uint8_t x, uint8_t y)
   uint8_t row = y / 8;
   uint8_t bit_position = y % 8;
 
-  return (sBuffer[(row * WIDTH) + x] & _BV(bit_position)) >> bit_position;
+  return (sBuffer[(row * ARDUBOY2_WIDTH) + x] & _BV(bit_position)) >> bit_position;
 }
 
 void Arduboy2Base::drawCircle(int16_t x0, int16_t y0, uint8_t r, uint8_t color)
@@ -521,7 +521,7 @@ void Arduboy2Base::drawRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t 
 void Arduboy2Base::drawFastVLine(int16_t x, int16_t y, uint8_t h, uint8_t color)
 {
   int16_t end = y + h;
-  for (int16_t a = maxVal(0, y); a < minVal(end, HEIGHT); a++)
+  for (int16_t a = maxVal(0, y); a < minVal(end, ARDUBOY2_HEIGHT); a++)
   {
     drawPixel(x, a, color);
   }
@@ -532,13 +532,13 @@ void Arduboy2Base::drawFastHLine(int16_t x, int16_t y, uint8_t w, uint8_t color)
   int16_t xEnd; // last x point + 1
 
   // Do y bounds checks
-  if (y < 0 || y >= HEIGHT)
+  if (y < 0 || y >= ARDUBOY2_HEIGHT)
     return;
 
   xEnd = x + w;
 
   // Check if the entire line is not on the display
-  if (xEnd <= 0 || x >= WIDTH)
+  if (xEnd <= 0 || x >= ARDUBOY2_WIDTH)
     return;
 
   // Don't start before the left edge
@@ -546,14 +546,14 @@ void Arduboy2Base::drawFastHLine(int16_t x, int16_t y, uint8_t w, uint8_t color)
     x = 0;
 
   // Don't end past the right edge
-  if (xEnd > WIDTH)
-    xEnd = WIDTH;
+  if (xEnd > ARDUBOY2_WIDTH)
+    xEnd = ARDUBOY2_WIDTH;
 
   // calculate actual width (even if unchanged)
   w = xEnd - x;
 
   // buffer pointer plus row offset + x offset
-  register uint8_t *pBuf = sBuffer + ((y / 8) * WIDTH) + x;
+  register uint8_t *pBuf = sBuffer + ((y / 8) * ARDUBOY2_WIDTH) + x;
 
   // pixel mask
   register uint8_t mask = 1 << (y & 7);
@@ -731,7 +731,7 @@ void Arduboy2Base::fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, 
 void Arduboy2Base::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color)
 {
   // no need to draw at all if we're offscreen
-  if (x + w < 0 || x > WIDTH - 1 || y + h < 0 || y > HEIGHT - 1)
+  if (x + w < 0 || x > ARDUBOY2_WIDTH - 1 || y + h < 0 || y > ARDUBOY2_HEIGHT - 1)
     return;
 
   int yOffset = abs((int)y) % 8;
@@ -747,33 +747,33 @@ void Arduboy2Base::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8
   for (int a = 0; a < rows; a++)
   {
     int bRow = sRow + a;
-    if (bRow > (HEIGHT / 8) - 1)
+    if (bRow > (ARDUBOY2_HEIGHT / 8) - 1)
       break;
     if (bRow > -2)
     {
       for (int iCol = 0; iCol < w; iCol++)
       {
-        if (iCol + x > (WIDTH - 1))
+        if (iCol + x > (ARDUBOY2_WIDTH - 1))
           break;
         if (iCol + x >= 0)
         {
           if (bRow >= 0)
           {
             if (color == WHITE)
-              sBuffer[(bRow * WIDTH) + x + iCol] |= pgm_read_byte(bitmap + (a * w) + iCol) << yOffset;
+              sBuffer[(bRow * ARDUBOY2_WIDTH) + x + iCol] |= pgm_read_byte(bitmap + (a * w) + iCol) << yOffset;
             else if (color == BLACK)
-              sBuffer[(bRow * WIDTH) + x + iCol] &= ~(pgm_read_byte(bitmap + (a * w) + iCol) << yOffset);
+              sBuffer[(bRow * ARDUBOY2_WIDTH) + x + iCol] &= ~(pgm_read_byte(bitmap + (a * w) + iCol) << yOffset);
             else
-              sBuffer[(bRow * WIDTH) + x + iCol] ^= pgm_read_byte(bitmap + (a * w) + iCol) << yOffset;
+              sBuffer[(bRow * ARDUBOY2_WIDTH) + x + iCol] ^= pgm_read_byte(bitmap + (a * w) + iCol) << yOffset;
           }
-          if (yOffset && bRow < (HEIGHT / 8) - 1 && bRow > -2)
+          if (yOffset && bRow < (ARDUBOY2_HEIGHT / 8) - 1 && bRow > -2)
           {
             if (color == WHITE)
-              sBuffer[((bRow + 1) * WIDTH) + x + iCol] |= pgm_read_byte(bitmap + (a * w) + iCol) >> (8 - yOffset);
+              sBuffer[((bRow + 1) * ARDUBOY2_WIDTH) + x + iCol] |= pgm_read_byte(bitmap + (a * w) + iCol) >> (8 - yOffset);
             else if (color == BLACK)
-              sBuffer[((bRow + 1) * WIDTH) + x + iCol] &= ~(pgm_read_byte(bitmap + (a * w) + iCol) >> (8 - yOffset));
+              sBuffer[((bRow + 1) * ARDUBOY2_WIDTH) + x + iCol] &= ~(pgm_read_byte(bitmap + (a * w) + iCol) >> (8 - yOffset));
             else
-              sBuffer[((bRow + 1) * WIDTH) + x + iCol] ^= pgm_read_byte(bitmap + (a * w) + iCol) >> (8 - yOffset);
+              sBuffer[((bRow + 1) * ARDUBOY2_WIDTH) + x + iCol] ^= pgm_read_byte(bitmap + (a * w) + iCol) >> (8 - yOffset);
           }
         }
       }
@@ -784,7 +784,7 @@ void Arduboy2Base::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8
 void Arduboy2Base::drawSlowXYBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color)
 {
   // no need to draw at all of we're offscreen
-  if (x + w < 0 || x > WIDTH - 1 || y + h < 0 || y > HEIGHT - 1)
+  if (x + w < 0 || x > ARDUBOY2_WIDTH - 1 || y + h < 0 || y > ARDUBOY2_HEIGHT - 1)
     return;
   int16_t xi, yi, byteWidth = (w + 7) / 8;
 
@@ -845,7 +845,7 @@ void Arduboy2Base::drawCompressed(int16_t sx, int16_t sy, const uint8_t *bitmap,
   uint8_t spanColour = (uint8_t)cs.readBits(1); // starting colour
 
   // no need to draw at all if we're offscreen
-  if ((sx + width < 0) || (sx > WIDTH - 1) || (sy + height < 0) || (sy > HEIGHT - 1))
+  if ((sx + width < 0) || (sx > ARDUBOY2_WIDTH - 1) || (sy + height < 0) || (sy > ARDUBOY2_HEIGHT - 1))
     return;
 
   // sy = sy - (frame * height);
@@ -885,11 +885,11 @@ void Arduboy2Base::drawCompressed(int16_t sx, int16_t sy, const uint8_t *bitmap,
         // draw
         int bRow = startRow + rowOffset;
 
-        //if (byte) // possible optimisation
-        if ((bRow <= (HEIGHT / 8) - 1) && (bRow > -2) &&
-            (columnOffset + sx <= (WIDTH - 1)) && (columnOffset + sx >= 0))
+        // if (byte) // possible optimisation
+        if ((bRow <= (ARDUBOY2_HEIGHT / 8) - 1) && (bRow > -2) &&
+            (columnOffset + sx <= (ARDUBOY2_WIDTH - 1)) && (columnOffset + sx >= 0))
         {
-          int16_t offset = (bRow * WIDTH) + sx + columnOffset;
+          int16_t offset = (bRow * ARDUBOY2_WIDTH) + sx + columnOffset;
           if (bRow >= 0)
           {
             int16_t index = offset;
@@ -899,9 +899,9 @@ void Arduboy2Base::drawCompressed(int16_t sx, int16_t sy, const uint8_t *bitmap,
             else
               sBuffer[index] &= ~value;
           }
-          if ((yOffset != 0) && (bRow < (HEIGHT / 8) - 1))
+          if ((yOffset != 0) && (bRow < (ARDUBOY2_HEIGHT / 8) - 1))
           {
-            int16_t index = offset + WIDTH;
+            int16_t index = offset + ARDUBOY2_WIDTH;
             uint8_t value = byte >> (8 - yOffset);
 
             if (color != 0)
@@ -931,7 +931,7 @@ void Arduboy2Base::drawCompressed(int16_t sx, int16_t sy, const uint8_t *bitmap,
 
 void Arduboy2Base::clear()
 {
-  memset(sBuffer, 0, HEIGHT * WIDTH / 8);
+  memset(sBuffer, 0, ARDUBOY2_HEIGHT * ARDUBOY2_WIDTH / 8);
 }
 
 #ifndef ESP8266
@@ -942,27 +942,52 @@ static bool frontBuffer[128 * 64];
 static bool backBuffer[128 * 64];
 static SemaphoreHandle_t xSemaphoreDisplay;
 
-
-
-static void updateBuffer(bool *theBuffer) {
-  //displayEPaper.firstPage();
+static void updateBuffer(bool *theBuffer)
+{
+  // displayEPaper.firstPage();
   /*do
   {*/
-    int i = 0;
-    for (int y = 0; y < SCREEN_HEIGHT; y++)
-      for (int x = 0; x < SCREEN_WIDTH; x++)
-      {
-        u8g2.setDrawColor(theBuffer[i++] ? 1 : 0);
-        u8g2.drawPixel(x,y);
-      }
-    
+  int i = 0;
+  for (int y = 0; y < SCREEN_HEIGHT; y++)
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+      u8g2.setDrawColor(theBuffer[i++] ? 1 : 0);
+      u8g2.drawPixel(x, y);
+    }
+
   //} while (displayEPaper.nextPage());
-    u8g2.sendBuffer();
+  u8g2.sendBuffer(); // eggfly comment this
 }
 
+void lcd_PushColors(uint16_t x,
+                    uint16_t y,
+                    uint16_t width,
+                    uint16_t high,
+                    uint16_t *data);
+
+uint16_t buffer565[SCREEN_WIDTH * SCREEN_HEIGHT];
+
+static void convertToRGB565(bool *inputBuffer, uint16_t *outputBuffer)
+{
+  for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; ++i)
+  {
+    if (inputBuffer[i])
+    {
+      // 白色
+      outputBuffer[i] = 0xFFFF;
+    }
+    else
+    {
+      // 黑色
+      outputBuffer[i] = 0x0000;
+    }
+  }
+}
 static void updateFullScreen(bool *theBuffer)
 {
-  updateBuffer(theBuffer);
+  convertToRGB565(theBuffer, buffer565);
+  // updateBuffer(theBuffer);
+  lcd_PushColors(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (uint16_t *)buffer565);
 }
 
 static void updateInterlaceScreen(bool *theBuffer)
@@ -976,14 +1001,14 @@ static void populateSprite(bool *Buffer, bool *Sprite)
   int xDst, yDst, loc;
   bool pixelValue;
 
-  for (int y = 0; y < HEIGHT; y++)
+  for (int y = 0; y < ARDUBOY2_HEIGHT; y++)
   {
-    for (int x = 0; x < WIDTH; x++)
+    for (int x = 0; x < ARDUBOY2_WIDTH; x++)
     {
-      pixel = y * WIDTH + x;
+      pixel = y * ARDUBOY2_WIDTH + x;
 #ifdef SCALE
-      xDst = (x * SCREEN_WIDTH) / WIDTH;
-      yDst = (y * SCREEN_HEIGHT) / HEIGHT;
+      xDst = (x * SCREEN_WIDTH) / ARDUBOY2_WIDTH;
+      yDst = (y * SCREEN_HEIGHT) / ARDUBOY2_HEIGHT;
       loc = xDst + yDst * SCREEN_WIDTH;
 
       pixelValue = Sprite[pixel];
@@ -1017,20 +1042,15 @@ static void displayScreen(void *mysprite)
     currentTime = esp_timer_get_time();
     frameTime = currentTime - lastTime;
     fps = 1000000 / frameTime;
-    populateSprite(sprite,backBuffer);
+    populateSprite(sprite, backBuffer);
 
-#ifdef INTERLACED_UPDATE
-    updateInterlaceScreen(sprite);
-    // helloWorld();
-#else
     updateFullScreen(sprite);
-#endif
 
-    #ifdef EPAPER130
+#ifdef EPAPER130
     vTaskDelay(10);
-    #else
-    vTaskDelay(5);
-    #endif
+#else
+    vTaskDelay(1);
+#endif
   }
 }
 
@@ -1051,14 +1071,15 @@ void Arduboy2Base::initDraw(void)
   // the new task attempts to access it.
   currentTime = esp_timer_get_time();
   gamecurrentTime = currentTime;
-  xTaskCreatePinnedToCore(displayScreen, "Display", 1024, sprite, 1, &xHandle, 0);
+  BaseType_t currentCoreID = xPortGetCoreID();
+  BaseType_t targetCoreID = (currentCoreID == 0) ? 1 : 0;
+  Serial.printf("currentCoreID : %d , targetCoreID : %d\r\n", currentCoreID, targetCoreID);
+  // oh no, another core will crash??
+  xTaskCreatePinnedToCore(displayScreen, "Display", 1024, sprite, 1, &xHandle, currentCoreID);
   configASSERT(xHandle);
   displayHandle = xHandle;
-    //vTaskSuspend(xHandledisplay);
+  // vTaskSuspend(xHandledisplay);
 }
-
-
-
 
 bool semCreate = false;
 void Arduboy2Base::display()
@@ -1089,14 +1110,14 @@ void Arduboy2Base::display()
     static int loc;
     int xDst, yDst;
     for (kPos = 0; kPos < 4; kPos++)
-    { //if exclude this 4 parts screen devision and process all the big oBuffer, EPS8266 resets (
+    { // if exclude this 4 parts screen devision and process all the big oBuffer, EPS8266 resets (
       kkPos = kPos << 1;
-      for (xPos = 0; xPos < WIDTH; xPos++)
+      for (xPos = 0; xPos < ARDUBOY2_WIDTH; xPos++)
       {
         for (yPos = 0; yPos < 16; yPos++)
         {
           if (!(yPos % 8))
-            currentDataByte = sBuffer[xPos + ((yPos >> 3) + kkPos) * WIDTH];
+            currentDataByte = sBuffer[xPos + ((yPos >> 3) + kkPos) * ARDUBOY2_WIDTH];
 #ifdef ESP8266
           addr = yPos * WIDTH + xPos;
           if (currentDataByte & 0x01)
@@ -1110,7 +1131,7 @@ void Arduboy2Base::display()
 #else
           xDst = xPos;
           yDst = (yPos + kPos * 16);
-          loc = xDst + yDst * WIDTH;
+          loc = xDst + yDst * ARDUBOY2_WIDTH;
           frontBuffer[loc] = currentDataByte & 0x01;
 #endif
           currentDataByte = currentDataByte >> 1;
@@ -1130,11 +1151,10 @@ void Arduboy2Base::display()
   gameframeTime = gamecurrentTime - gamelastTime;
   gamefps = 1000000 / gameframeTime;
 
-  //Serial.write(printf("screen : %lld , game : %lld , input : %lld\r\n", fps, gamefps, inputfps));
+  // Serial.write(printf("screen : %lld , game : %lld , input : %lld\r\n", fps, gamefps, inputfps));
   this->initDraw();
 #endif
 }
-
 
 void Arduboy2Base::display(bool clear)
 {
@@ -1142,7 +1162,6 @@ void Arduboy2Base::display(bool clear)
   if (clear)
     this->clear();
 }
-
 
 uint8_t *Arduboy2Base::getBuffer()
 {
@@ -1397,7 +1416,7 @@ size_t Arduboy2::write(uint8_t c)
   {
     drawChar(cursor_x, cursor_y, c, textColor, textBackground, textSize);
     cursor_x += textSize * 6;
-    if (textWrap && (cursor_x > (WIDTH - textSize * 6)))
+    if (textWrap && (cursor_x > (ARDUBOY2_WIDTH - textSize * 6)))
     {
       // calling ourselves recursively for 'newline' is
       // 12 bytes smaller than doing the same math here
@@ -1413,8 +1432,8 @@ void Arduboy2::drawChar(int16_t x, int16_t y, unsigned char c, uint8_t color, ui
   bool draw_background = bg != color;
   const unsigned char *bitmap = font + c * 5;
 
-  if ((x >= WIDTH) ||             // Clip right
-      (y >= HEIGHT) ||            // Clip bottom
+  if ((x >= ARDUBOY2_WIDTH) ||    // Clip right
+      (y >= ARDUBOY2_HEIGHT) ||   // Clip bottom
       ((x + 5 * size - 1) < 0) || // Clip left
       ((y + 8 * size - 1) < 0)    // Clip top
   )

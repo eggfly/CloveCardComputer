@@ -13,8 +13,8 @@
 #define XPOWERS_CHIP_AXP2101
 #include "XPowersLib.h"
 
-#define WIDTH 536
-#define HEIGHT 240
+#define AMOLED_WIDTH 536
+#define AMOLED_HEIGHT 240
 
 extern TFT_eSprite spr;
 extern OpenFontRender render;
@@ -27,6 +27,8 @@ extern bool keypad_states[5];
 extern Adafruit_PCF8574 pcf;
 
 extern int32_t tp_fingers_count, tp_x1, tp_y1, tp_x2, tp_y2;
+
+void mmap_font_partition();
 
 void setup_pmu();
 void loop_pmu();

@@ -92,9 +92,9 @@ void loop_ft3168()
         auto y2 = (int32_t)FT3168->IIC_Read_Device_Value(FT3168->Arduino_IIC_Touch::Value_Information::TOUCH2_COORDINATE_Y);
         // CONVERT TO TFT COORDINATE
         tp_x1 = y1;
-        tp_y1 = HEIGHT - x1;
+        tp_y1 = AMOLED_HEIGHT - x1;
         tp_x2 = y2;
-        tp_y2 = HEIGHT - x2;
+        tp_y2 = AMOLED_HEIGHT - x2;
         Serial.printf("\nTouch X1:%d Y1:%d\n", tp_x1, tp_y1);
         Serial.printf("Touch X2:%d Y2:%d\n", tp_x2, tp_y2);
     }

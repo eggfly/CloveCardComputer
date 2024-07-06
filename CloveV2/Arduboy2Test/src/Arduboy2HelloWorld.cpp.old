@@ -14,6 +14,7 @@ version 2.1 of the License, or (at your option) any later version.
 #include <Arduino.h>
 
 #include <Arduboy2.h>
+#include <app.h>
 
 // make an instance of arduboy used for many functions
 Arduboy2 arduboy;
@@ -22,7 +23,7 @@ Arduboy2 arduboy;
 // use it for anything that needs to be set only once in your game.
 void setup()
 {
-    Serial.begin(115200);
+
     // initiate arduboy instance
     arduboy.begin();
 
@@ -35,7 +36,6 @@ void setup()
 // this is where our game logic goes.
 void loop()
 {
-    Serial.println("Hello, World!");
     // pause render until it's time for the next frame
     if (!(arduboy.nextFrame()))
         return;
@@ -52,4 +52,6 @@ void loop()
 
     // then we finaly we tell the arduboy to display what we just wrote to the display
     arduboy.display();
+    // delay(1000);
 }
+

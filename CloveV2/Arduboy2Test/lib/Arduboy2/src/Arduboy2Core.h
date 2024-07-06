@@ -29,8 +29,10 @@
 //#define GAMEPAD
 #define PS3GAMEPAD
 #elif defined(DFROBOT_TOLED_BEETLEC3)
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+#define SCALE
+// 128x64 -> 256x128
+#define SCREEN_WIDTH 256
+#define SCREEN_HEIGHT 128
 #define BUTTONS_RESISTOR_LADDER
 #elif defined(EPAPER130)
 #define SCREEN_WIDTH 250
@@ -128,8 +130,12 @@ extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 #define PAD_RGT         0x80
 #define PAD_ANY         0xff
 
-#define WIDTH 128 /**< The width of the display in pixels */
-#define HEIGHT 64 /**< The height of the display in pixels */
+#define ARDUBOY2_WIDTH   128
+#define ARDUBOY2_HEIGHT   64
+
+// eggfly
+void mmap_font_partition();
+void setup_amoled();
 
 /** \brief
  * Lower level functions generally dealing directly with the hardware.
@@ -151,7 +157,7 @@ class Arduboy2Core
 
   public:
   
-    static uint8_t sBuffer[(HEIGHT*WIDTH)/8];
+    static uint8_t sBuffer[(ARDUBOY2_HEIGHT*ARDUBOY2_WIDTH)/8];
     
     Arduboy2Core();
 

@@ -19,15 +19,15 @@
 #include <EEPROM.h>
 #endif
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"å
+#include "freertos/task.h"
 #include "Arduboy2Core.h"
 #include "Arduboy2Beep.h"
 #include "Sprites.h"
 #include "SpritesB.h"
 #include <Print.h>
 #include <limits.h>
-#include <U8g2lib.h>
-#include <U8x8lib.h>
+// #include <U8g2lib.h>
+// #include <U8x8lib.h>
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>

@@ -209,7 +209,7 @@ void MicroPhoneFFT()
         }
     }
     // spr.pushSprite(0, 60);
-    lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+    lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
 }
 
 void setup_spm1423()

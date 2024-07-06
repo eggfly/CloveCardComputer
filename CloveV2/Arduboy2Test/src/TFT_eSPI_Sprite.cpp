@@ -38,7 +38,7 @@
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite spr = TFT_eSprite(&tft);
 
-Arduino_Canvas *gfx = new Arduino_Canvas(WIDTH /* width */, HEIGHT /* height */, nullptr);
+Arduino_Canvas *gfx = new Arduino_Canvas(AMOLED_WIDTH /* width */, AMOLED_HEIGHT /* height */, nullptr);
 
 uint8_t *swappedBuffer;
 
@@ -64,8 +64,8 @@ const size_t font2_size = 4625768;
 
 void flush_screen()
 {
-  swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, WIDTH * HEIGHT * 2);
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)swappedBuffer);
+  swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, AMOLED_WIDTH * AMOLED_HEIGHT * 2);
+  lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)swappedBuffer);
   // lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
 }
 
@@ -81,11 +81,11 @@ void setup_amoled()
   // pinMode(0, INPUT);
   rm67162_init();
   lcd_setRotation(1);
-  spr.createSprite(WIDTH, HEIGHT);
+  spr.createSprite(AMOLED_WIDTH, AMOLED_HEIGHT);
   spr.setSwapBytes(1);
   gfx->begin();
   gfx->setRotation(0);
-  swappedBuffer = (uint8_t *)ps_malloc(WIDTH * HEIGHT * 2);
+  swappedBuffer = (uint8_t *)ps_malloc(AMOLED_WIDTH* AMOLED_HEIGHT * 2);
   if (swappedBuffer)
   {
     printf("swappedBuffer=%p\n", swappedBuffer);
@@ -137,7 +137,7 @@ void setup_amoled()
   render.seekCursor(0, -3);
 
   render.setFontSize(19);
-  render.setFontColor(TFT_MAGENTA, TFT_BLACK);
+  render.setFontColor(TFT_WHITE, TFT_BLACK);
   // render.printf("Clove 电脑 - 音乐播放器\n（支持 mp3、flac、aac）\n");
   // render.calculateBoundingBox()
   render.printf(
@@ -171,12 +171,12 @@ void setup_amoled()
   // gfx->fillScreen(TFT_GREEN);
   gfx->draw16bitRGBBitmap(0, 0, (uint16_t *)FM_536x240_map, 536, 240);
   unsigned long start = millis();
-  swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, WIDTH * HEIGHT * 2);
+  swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, AMOLED_WIDTH * AMOLED_HEIGHT * 2);
   printf("swapBuffer cost %lu\n", millis() - start);
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)swappedBuffer);
+  lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)swappedBuffer);
   // lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
   // delay(1000);
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+  lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
 
   printf("setup() done\n");
 }
@@ -197,13 +197,13 @@ void loop_touch_amoled()
 
 void test_amoled()
 {
-  spr.pushImage(0, 0, WIDTH, HEIGHT, (uint16_t *)gImage_true_color);
+  spr.pushImage(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)gImage_true_color);
   // spr.pushImage((536 - 480) / 2, 0, 480, 240, (uint16_t *)nc1020);
 
   // spr.pushImage(0, 0, 256, 240, (uint16_t *)mario);
   // spr.pushImage(0 + 536 / 2, 0, 256, 240, (uint16_t *)mario);
   // Finally send buffer to screen
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+  lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
   // if (!digitalRead(0)) {
   //   Serial.println("press");
   //   lcd_setBrightness(brightness);
@@ -240,7 +240,7 @@ void test_amoled()
   spr.fillRect(67 * 6, 120, 67, 120, TFT_BLUE);
   spr.fillRect(67 * 7, 120, 67, 120, TFT_RED);
 
-  lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+  lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
   delay(2000);
 
   uint16_t colors[6] = {TFT_RED, TFT_GREEN, TFT_BLUE, TFT_YELLOW, TFT_CYAN, TFT_MAGENTA};
@@ -248,25 +248,25 @@ void test_amoled()
   {
     spr.fillSprite(TFT_BLACK);
     spr.setTextColor(colors[i], TFT_BLACK);
-    spr.drawString("LilyGo.cc", WIDTH / 2 - 30, 85, 4);
-    spr.drawString("T-Display AMOLED", WIDTH / 2 - 70, 110, 4);
-    lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+    spr.drawString("LilyGo.cc", AMOLED_WIDTH / 2 - 30, 85, 4);
+    spr.drawString("T-Display AMOLED", AMOLED_WIDTH / 2 - 70, 110, 4);
+    lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
     delay(200);
   }
   delay(2000);
 
-  for (int pos = WIDTH; pos > 0; pos--)
+  for (int pos = AMOLED_WIDTH; pos > 0; pos--)
   {
-    int h = HEIGHT;
+    int h = AMOLED_HEIGHT;
     while (h--)
-      spr.drawFastHLine(0, h, WIDTH, rainbow(h * 4));
+      spr.drawFastHLine(0, h, AMOLED_WIDTH, rainbow(h * 4));
     spr.setTextSize(1);
     spr.setTextFont(4);
     spr.setTextColor(TFT_WHITE);
     spr.setTextWrap(false);
     spr.setCursor(pos, 100);
     spr.print("LilyGo AMOLED");
-    lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+    lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
   }
   delay(2000);
 
@@ -287,7 +287,7 @@ void drawRainbow()
     targetTime = millis() + 500;
     Serial.println(targetTime);
     // Colour changing state machine
-    for (int i = 0; i < WIDTH; i++)
+    for (int i = 0; i < AMOLED_WIDTH; i++)
     {
       spr.drawFastVLine(i, 0, spr.height(), colour);
       switch (state)
@@ -373,7 +373,7 @@ void drawRainbow()
     int font = 2;                                           // font number only 2,4,6,7 valid. Font 6 only contains characters [space] 0 1 2 3 4 5 6 7 8 9 0 : a p m
     xpos += spr.drawFloat(pi, precision, xpos, ypos, font); // Draw rounded number and return new xpos delta for next print position
     spr.drawString(" is pi", xpos, ypos, font);             // Continue printing from new x position
-    lcd_PushColors(0, 0, WIDTH, HEIGHT, (uint16_t *)spr.getPointer());
+    lcd_PushColors(0, 0, AMOLED_WIDTH, AMOLED_HEIGHT, (uint16_t *)spr.getPointer());
   }
 }
 

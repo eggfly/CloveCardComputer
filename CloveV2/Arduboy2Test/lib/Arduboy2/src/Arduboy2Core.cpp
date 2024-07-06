@@ -52,21 +52,21 @@ void Arduboy2Core::boot()
 #ifdef ESP32
   esp_timer_init();
 #endif
-  //WiFi.mode(WIFI_OFF);
+  // WiFi.mode(WIFI_OFF);
   delay(100);
-//LED init
+// LED init
 #ifdef ESP8266
   myled.begin();
 #endif
 
 #ifdef ADAFRUIT
-  //DAC init, LCD backlit off
+  // DAC init, LCD backlit off
   dac.begin(MCP4725address);
   delay(50);
   dac.setVoltage(0, false);
   delay(100);
 
-  //MCP23017 and buttons init, should preceed the TFT init
+  // MCP23017 and buttons init, should preceed the TFT init
   mcp.begin(MCP23017address);
   delay(100);
 
@@ -76,7 +76,7 @@ void Arduboy2Core::boot()
     mcp.pullUp(i, HIGH);
   }
 
-  //Sound init and test
+  // Sound init and test
   pinMode(PIN_SPEAKER_1, OUTPUT);
   tone(PIN_SPEAKER_1, 200, 100);
   delay(100);
@@ -84,7 +84,7 @@ void Arduboy2Core::boot()
   delay(100);
   noTone(PIN_SPEAKER_1);
 
-  //TFT init
+  // TFT init
   mcp.pinMode(CSTFTPIN, OUTPUT);
   mcp.digitalWrite(CSTFTPIN, LOW);
 #endif
@@ -102,7 +102,7 @@ void Arduboy2Core::boot()
   Serial.write("Screen Init\r\n");
 
 #ifdef ADAFRUIT
-  //LCD backlit on
+  // LCD backlit on
   for (uint8_t bcklt = 0; bcklt < 100; bcklt++)
   {
     dac.setVoltage(bcklt * 20, false);
@@ -126,34 +126,37 @@ void Arduboy2Core::boot()
 #else
   screen.fillScreen(TFT_BLACK);
 #endif
+
+  mmap_font_partition();
+  setup_amoled();
   Serial.write("Boottt Done!");
 }
 
-void Arduboy2Core::setCPUSpeed8MHz(){};
-void Arduboy2Core::bootPins(){};
-void Arduboy2Core::bootOLED(){};
-void Arduboy2Core::LCDDataMode(){};
-void Arduboy2Core::LCDCommandMode(){};
+void Arduboy2Core::setCPUSpeed8MHz() {};
+void Arduboy2Core::bootPins() {};
+void Arduboy2Core::bootOLED() {};
+void Arduboy2Core::LCDDataMode() {};
+void Arduboy2Core::LCDCommandMode() {};
 void Arduboy2Core::bootSPI() {}
-void Arduboy2Core::SPItransfer(uint8_t data){};
+void Arduboy2Core::SPItransfer(uint8_t data) {};
 void Arduboy2Core::safeMode() {}
-void Arduboy2Core::bootPowerSaving(){};
-void Arduboy2Core::sendLCDCommand(uint8_t command){};
-void Arduboy2Core::exitToBootloader(){};
-void Arduboy2Core::mainNoUSB(){};
+void Arduboy2Core::bootPowerSaving() {};
+void Arduboy2Core::sendLCDCommand(uint8_t command) {};
+void Arduboy2Core::exitToBootloader() {};
+void Arduboy2Core::mainNoUSB() {};
 // turn all display pixels on, ignoring buffer contents
 // or set to normal buffer display
-void Arduboy2Core::allPixelsOn(bool on){};
-void Arduboy2Core::blank(){};
+void Arduboy2Core::allPixelsOn(bool on) {};
+void Arduboy2Core::blank() {};
 // invert the display or set to normal
 // when inverted, a pixel set to 0 will be on
-void Arduboy2Core::invert(bool inverse){};
+void Arduboy2Core::invert(bool inverse) {};
 // flip the display vertically or set to normal
-void Arduboy2Core::flipVertical(bool flipped){};
+void Arduboy2Core::flipVertical(bool flipped) {};
 // flip the display horizontally or set to normal
-void Arduboy2Core::flipHorizontal(bool flipped){};
+void Arduboy2Core::flipHorizontal(bool flipped) {};
 void Arduboy2Core::paint8Pixels(uint8_t pixels) {}
-void Arduboy2Core::freeRGBled(){};
+void Arduboy2Core::freeRGBled() {};
 
 /* Power Management */
 void Arduboy2Core::idle()
@@ -177,14 +180,14 @@ void Arduboy2Core::displayOn()
 #endif
 };
 
-uint8_t Arduboy2Core::width() { return WIDTH; }
+uint8_t Arduboy2Core::width() { return ARDUBOY2_WIDTH; }
 
-uint8_t Arduboy2Core::height() { return HEIGHT; }
+uint8_t Arduboy2Core::height() { return ARDUBOY2_HEIGHT; }
 
 /* Drawing */
 
-void Arduboy2Core::paintScreen(const uint8_t *image){
-    //memcpy(sBuffer, image, HEIGHT*WIDTH/8);
+void Arduboy2Core::paintScreen(const uint8_t *image) {
+  // memcpy(sBuffer, image, HEIGHT*WIDTH/8);
 };
 
 // paint from a memory buffer, this should be FAST as it's likely what
@@ -193,9 +196,9 @@ void Arduboy2Core::paintScreen(const uint8_t *image){
 // The following assembly code runs "open loop". It relies on instruction
 // execution times to allow time for each byte of data to be clocked out.
 // It is specifically tuned for a 16MHz CPU clock and SPI clocking at 8MHz.
-void Arduboy2Core::paintScreen(uint8_t image[], bool clear){
-    //  memcpy(sBuffer, image, HEIGHT*WIDTH/8);
-    //  if (clear) memset(sBuffer, 0, HEIGHT*WIDTH/8);
+void Arduboy2Core::paintScreen(uint8_t image[], bool clear) {
+  //  memcpy(sBuffer, image, HEIGHT*WIDTH/8);
+  //  if (clear) memset(sBuffer, 0, HEIGHT*WIDTH/8);
 };
 
 /* RGB LED */
@@ -406,12 +409,15 @@ static bool buttonRun = false;
 int player = 0;
 int battery = 0;
 
-void onConnect(){
-    Serial.println("PS3 GamePad Connected.");
-    Serial.print("Setting LEDs to player "); Serial.println(player, DEC);
-    Ps3.setPlayer(player);
-    player += 1;
-    if(player > 10) player = 0;
+void onConnect()
+{
+  Serial.println("PS3 GamePad Connected.");
+  Serial.print("Setting LEDs to player ");
+  Serial.println(player, DEC);
+  Ps3.setPlayer(player);
+  player += 1;
+  if (player > 10)
+    player = 0;
 }
 
 bool ps3left = 0;
@@ -423,64 +429,67 @@ bool ps3square = 0;
 bool ps3circle = 0;
 bool ps3triangle = 0;
 
-void notify() {
-    if( Ps3.event.button_down.up )
-      ps3up = 1;
-    if( Ps3.event.button_up.up )
-      ps3up = 0;
+void notify()
+{
+  if (Ps3.event.button_down.up)
+    ps3up = 1;
+  if (Ps3.event.button_up.up)
+    ps3up = 0;
 
-    if( Ps3.event.button_down.down )
-      ps3down = 1;
-    if( Ps3.event.button_up.down )
-      ps3down = 0;
+  if (Ps3.event.button_down.down)
+    ps3down = 1;
+  if (Ps3.event.button_up.down)
+    ps3down = 0;
 
-    if( Ps3.event.button_down.left )
-      ps3left = 1;
-    if( Ps3.event.button_up.left )
-      ps3left = 0;
+  if (Ps3.event.button_down.left)
+    ps3left = 1;
+  if (Ps3.event.button_up.left)
+    ps3left = 0;
 
-    if( Ps3.event.button_down.right )
-      ps3right = 1;
-    if( Ps3.event.button_up.right )
-      ps3right = 0;
+  if (Ps3.event.button_down.right)
+    ps3right = 1;
+  if (Ps3.event.button_up.right)
+    ps3right = 0;
 
-    if( Ps3.event.button_down.cross )
-      ps3cross = 1;
-    if( Ps3.event.button_up.cross )
-      ps3cross = 0;
+  if (Ps3.event.button_down.cross)
+    ps3cross = 1;
+  if (Ps3.event.button_up.cross)
+    ps3cross = 0;
 
-    if( Ps3.event.button_down.square )
-      ps3square = 1;
-    if( Ps3.event.button_up.square )
-      ps3square = 0;
+  if (Ps3.event.button_down.square)
+    ps3square = 1;
+  if (Ps3.event.button_up.square)
+    ps3square = 0;
 
-    if( Ps3.event.button_down.triangle )
-      ps3triangle = 1;
-    if( Ps3.event.button_up.triangle )
-      ps3triangle = 0;
+  if (Ps3.event.button_down.triangle)
+    ps3triangle = 1;
+  if (Ps3.event.button_up.triangle)
+    ps3triangle = 0;
 
-    if( Ps3.event.button_down.circle )
-      ps3circle = 1;
-    if( Ps3.event.button_up.circle )
-      ps3circle = 0;
+  if (Ps3.event.button_down.circle)
+    ps3circle = 1;
+  if (Ps3.event.button_up.circle)
+    ps3circle = 0;
 }
 
-void ps3gamepad_init() {
-    Ps3.attach(notify);
-    Ps3.attachOnConnect(onConnect);
-    Ps3.begin("01:02:03:04:05:06");
+void ps3gamepad_init()
+{
+  Ps3.attach(notify);
+  Ps3.attachOnConnect(onConnect);
+  Ps3.begin("01:02:03:04:05:06");
 }
 
-byte ps3gamepad_loop() {
+byte ps3gamepad_loop()
+{
   byte buttonVals = 0;
 
-  if(!Ps3.isConnected())
+  if (!Ps3.isConnected())
     return 0;
 
-  buttonVals = buttonVals | (ps3left  << P1_Left);
+  buttonVals = buttonVals | (ps3left << P1_Left);
   buttonVals = buttonVals | (ps3right << P1_Right);
-  buttonVals = buttonVals | (ps3up    << P1_Top);
-  buttonVals = buttonVals | (ps3down  << P1_Bottom);
+  buttonVals = buttonVals | (ps3up << P1_Top);
+  buttonVals = buttonVals | (ps3down << P1_Bottom);
 
   buttonVals = buttonVals | (ps3circle << P2_Right);
   buttonVals = buttonVals | (ps3cross << P2_Bottom);
@@ -580,55 +589,61 @@ uint8_t Arduboy2Core::buttonsState()
   }
 #elif defined(BUTTONS_RESISTOR_LADDER)
   int i = analogRead(3);
-  if(i < 850 && i > 810) buttons |= UP_BUTTON;
-  if(i < 145 && i > 105) buttons |= DOWN_BUTTON;
-  if(i < 299 && i > 259) buttons |= LEFT_BUTTON;
-  if(i < 495 && i > 455) buttons |= RIGHT_BUTTON;
-  if(i < 2260 && i > 2220) buttons |= A_BUTTON;
-  if(i < 1500 && i > 1460) buttons |= B_BUTTON;
+  if (i < 850 && i > 810)
+    buttons |= UP_BUTTON;
+  if (i < 145 && i > 105)
+    buttons |= DOWN_BUTTON;
+  if (i < 299 && i > 259)
+    buttons |= LEFT_BUTTON;
+  if (i < 495 && i > 455)
+    buttons |= RIGHT_BUTTON;
+  if (i < 2260 && i > 2220)
+    buttons |= A_BUTTON;
+  if (i < 1500 && i > 1460)
+    buttons |= B_BUTTON;
 #else
   // Initial Setup
   if (inputSetup)
   {
-    #ifdef GAMEPAD
+#ifdef GAMEPAD
     if (xSemaphoreTake(xSemaphoreInput, (TickType_t)100) == pdTRUE)
     {
       keystate = keyStateThread;
       xSemaphoreGive(xSemaphoreInput);
     }
-    #elif defined(ONEBUTTON)
+#elif defined(ONEBUTTON)
     // Disabled threading because of instantaneous press checks.
-     keystate = buttonCheck();
-    #elif defined(PS3GAMEPAD)
-    #if defined(EPAPER130)
+    keystate = buttonCheck();
+#elif defined(PS3GAMEPAD)
+#if defined(EPAPER130)
     keystate = getReadShift();
-    #else
+#else
     if (xSemaphoreTake(xSemaphoreInput, (TickType_t)100) == pdTRUE)
     {
       keystate = keyStateThread;
       xSemaphoreGive(xSemaphoreInput);
     }
-    #endif
-    #endif
+#endif
+#endif
 
     if (keystate & BIT_P1_Left)
-      buttons |= LEFT_BUTTON; //Left
+      buttons |= LEFT_BUTTON; // Left
     if (keystate & BIT_P1_Right)
-      buttons |= RIGHT_BUTTON; //Right
+      buttons |= RIGHT_BUTTON; // Right
     if (keystate & BIT_P1_Top)
-      buttons |= UP_BUTTON; //Up
+      buttons |= UP_BUTTON; // Up
     if (keystate & BIT_P1_Bottom)
       buttons |= DOWN_BUTTON;
-    ; //Down
+    ; // Down
     if (keystate & BIT_P2_Right)
       buttons |= A_BUTTON;
-    ; //A
+    ; // A
     if (keystate & BIT_P2_Bottom)
-      buttons |= A_BUTTON; //A
+      buttons |= A_BUTTON; // A
     if (keystate & BIT_P2_Left)
-      buttons |= B_BUTTON; //B
+      buttons |= B_BUTTON; // B
     if (keystate & BIT_P2_Top)
-      buttons |= B_BUTTON; //B
+      buttons |= B_BUTTON; // B
   }
   else
   {
@@ -647,14 +662,14 @@ uint8_t Arduboy2Core::buttonsState()
 
     xTaskCreatePinnedToCore(inputThread, "Input", 1024, nullptr, 1, &xHandle, 0);
 #endif
-    
-    #ifdef PS3GAMEPAD
-    #ifndef EPAPER130
+
+#ifdef PS3GAMEPAD
+#ifndef EPAPER130
     TaskHandle_t xHandle = NULL;
     xSemaphoreInput = xSemaphoreCreateMutex();
     xTaskCreatePinnedToCore(inputThread, "Input", 1024, nullptr, 1, &xHandle, 0);
-    #endif
-    #endif
+#endif
+#endif
 
     inputSetup = true;
   }
