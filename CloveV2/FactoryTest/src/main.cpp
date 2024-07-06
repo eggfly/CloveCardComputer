@@ -59,7 +59,7 @@ void setup()
 
 bool isFM = false;
 bool fmInitialized = false;
-#define FM_INITIAL_VOLUME 8
+#define FM_INITIAL_VOLUME 2
 
 #define VDD_FM_VOLTAGE 3300
 

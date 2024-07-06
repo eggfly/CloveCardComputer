@@ -14,6 +14,7 @@
 #include "res.h"
 
 #include "music_player_536_240.h"
+#include "FM_536x240.h"
 
 #include <Arduino_GFX_Library.h>
 
@@ -168,7 +169,7 @@ void setup_amoled()
   printf("Time: %ld ms\n", t_end - t_start);
   // finally flush
   // gfx->fillScreen(TFT_GREEN);
-  gfx->draw16bitRGBBitmap(0, 0, (uint16_t *)music_player_536_240, 536, 240);
+  gfx->draw16bitRGBBitmap(0, 0, (uint16_t *)FM_536x240_map, 536, 240);
   unsigned long start = millis();
   swapBytes((uint8_t *)gfx->getFramebuffer(), swappedBuffer, WIDTH * HEIGHT * 2);
   printf("swapBuffer cost %lu\n", millis() - start);
