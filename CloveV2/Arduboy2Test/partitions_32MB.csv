@@ -1,0 +1,11 @@
+# Name,   Type, SubType, Offset, Size, Flags
+nvs,      data, nvs,     ,       20K,
+otadata,  data, ota,     ,       8K,
+app0,     app,  ota_0,   ,       10M,
+# app1,     app,  ota_1,   ,       8M,
+spiffs,  data,  spiffs,  ,       1M,
+font1,   data, 0x22,    , 9M,
+font2,   data, 0x22,    , 5M,
+# spiffs_res_0,data,spiffs,,1M,
+# spiffs_res_1,data,spiffs,,64K,
+# spring_wreath,data,undefined,,0xa2d9b0,
