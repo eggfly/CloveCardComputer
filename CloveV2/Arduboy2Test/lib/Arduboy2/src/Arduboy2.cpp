@@ -976,7 +976,7 @@ static void updateFullScreen(bool *theBuffer)
   const auto y = (AMOLED_HEIGHT - SCREEN_HEIGHT) / 2;
   // x = constrain(x, 0, AMOLED_WIDTH - SCREEN_WIDTH);
   // y = constrain(y, 0, AMOLED_HEIGHT - SCREEN_HEIGHT);
-  lcd_PushColors(90, 32, SCREEN_WIDTH, SCREEN_HEIGHT, (uint16_t *)buffer565);
+  lcd_PushColors(x, y, SCREEN_WIDTH, SCREEN_HEIGHT, (uint16_t *)buffer565);
 }
 
 static void populateSprite(bool *Buffer, bool *Sprite)
@@ -1068,7 +1068,7 @@ void Arduboy2Base::initDraw(void)
   BaseType_t targetCoreID = (currentCoreID == 0) ? 1 : 0;
   Serial.printf("currentCoreID : %d , targetCoreID : %d\r\n", currentCoreID, targetCoreID);
   // oh no, another core will crash??
-  xTaskCreatePinnedToCore(displayScreen, "Display", 1024, sprite, 1, &xHandle, currentCoreID);
+  xTaskCreatePinnedToCore(displayScreen, "Display", 4096, sprite, 1, &xHandle, currentCoreID);
   configASSERT(xHandle);
   displayHandle = xHandle;
   // vTaskSuspend(xHandledisplay);
@@ -1078,7 +1078,6 @@ bool semCreate = false;
 void Arduboy2Base::display()
 {
 #ifdef ESP8266
-  static uint16_t oBuffer[WIDTH * 16];
 #else
   if (!semCreate)
   {
@@ -1111,34 +1110,17 @@ void Arduboy2Base::display()
         {
           if (!(yPos % 8))
             currentDataByte = sBuffer[xPos + ((yPos >> 3) + kkPos) * ARDUBOY2_WIDTH];
-#ifdef ESP8266
-          addr = yPos * WIDTH + xPos;
-          if (currentDataByte & 0x01)
-          {
-            oBuffer[addr] = foregroundColor;
-          }
-          else
-          {
-            oBuffer[addr] = backgroundColor;
-          }
-#else
+
           xDst = xPos;
           yDst = (yPos + kPos * 16);
           loc = xDst + yDst * ARDUBOY2_WIDTH;
           frontBuffer[loc] = currentDataByte & 0x01;
-#endif
           currentDataByte = currentDataByte >> 1;
         }
       }
-
-#ifdef ESP8266
-      // This is doing the quarter image write
-      screen.pushImage(0, 20 + kPos * 16, WIDTH, 16, oBuffer);
-#endif
     }
     xSemaphoreGive(xSemaphoreDisplay);
   }
-#ifndef ESP8266
   gamelastTime = gamecurrentTime;
   gamecurrentTime = esp_timer_get_time();
   gameframeTime = gamecurrentTime - gamelastTime;
@@ -1146,7 +1128,6 @@ void Arduboy2Base::display()
 
   // Serial.write(printf("screen : %lld , game : %lld , input : %lld\r\n", fps, gamefps, inputfps));
   this->initDraw();
-#endif
 }
 
 void Arduboy2Base::display(bool clear)

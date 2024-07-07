@@ -7,7 +7,6 @@
 #include "Arduboy2Core.h"
 #include "CloveExternalAPI.h"
 
-
 #ifdef ONEBUTTON
 #include "Button2.h"
 #endif
@@ -41,50 +40,22 @@ Arduboy2Core::Arduboy2Core() {}
 void Arduboy2Core::boot()
 {
   Serial.begin(115200);
+#ifdef ESP32
+  esp_timer_init();
+#endif
   delay(100);
   Wire.begin(2, 3);
   Wire1.begin(43, 44);
+  setup_pcf8574();
   // setup_pmu();
   mmap_font_partition();
   setup_tca8418();
   delay(100);
-  setup_pcf8574();
-  delay(100);
-#ifdef ESP32
-  esp_timer_init();
-#endif
   // WiFi.mode(WIFI_OFF);
-// LED init
-#ifdef ESP8266
-  myled.begin();
-#endif
+  // LED init
 
-#if defined(EPAPER130)
-  displayEPaper.init(115200);
-#elif defined(DFROBOT_TOLED_BEETLEC3)
-  // u8g2.begin();
-#else
-  screen.begin();
-  delay(200);
-  screen.setRotation(0);
-  screen.fillScreen(TFT_BLACK);
-#endif
   Serial.println("Screen Init");
-
-  delay(100);
-
-#if defined(EPAPER130)
-  displayEPaper.firstPage();
-  do
-  {
-    displayEPaper.fillScreen(GxEPD_WHITE);
-  } while (displayEPaper.nextPage());
-#elif defined(DFROBOT_TOLED_BEETLEC3)
-  // Clean screen
-#else
-  screen.fillScreen(TFT_BLACK);
-#endif
-
+  // delay(100);
   setup_amoled();
   Serial.println("Boot Done!");
 }
@@ -512,128 +483,39 @@ uint8_t buttons = 0;
 
 uint8_t Arduboy2Core::buttonsState()
 {
-  // loop_pcf8574();
-  // loop_tca8418();
   buttons = 0;
-#ifdef ESP8266
-  keystate = ~mcp.readGPIOAB() & 255;
-
-  // LEFT_BUTTON, RIGHT_BUTTON, UP_BUTTON, DOWN_BUTTON, A_BUTTON, B_BUTTON
-  if (keystate & PAD_ANY)
+  loop_tca8418();
+  loop_pcf8574();
+  auto up = keyboard_states[1][0];
+  auto down = keyboard_states[1][2];
+  auto left = keyboard_states[0][1];
+  auto right = keyboard_states[2][1];
+  auto keyA = keyboard_states[6][5];
+  auto keyB = keyboard_states[6][6];
+  if (keyA)
   {
-    if (keystate & PAD_LEFT)
-    {
-      buttons |= LEFT_BUTTON;
-    } // left
-    if (keystate & PAD_RIGHT)
-    {
-      buttons |= RIGHT_BUTTON;
-    } // right
-    if (keystate & PAD_UP)
-    {
-      buttons |= UP_BUTTON;
-    } // up
-    if (keystate & PAD_DOWN)
-    {
-      buttons |= DOWN_BUTTON;
-    } // down
-    if (keystate & PAD_ACT)
-    {
-      buttons |= A_BUTTON;
-    } // a?
-    if (keystate & PAD_ESC)
-    {
-      buttons |= B_BUTTON;
-    } // b?
-  }
-#elif defined(BUTTONS_RESISTOR_LADDER)
-  int i = analogRead(3);
-  if (i < 850 && i > 810)
-    buttons |= UP_BUTTON;
-  if (i < 145 && i > 105)
-    buttons |= DOWN_BUTTON;
-  if (i < 299 && i > 259)
-    buttons |= LEFT_BUTTON;
-  if (i < 495 && i > 455)
-    buttons |= RIGHT_BUTTON;
-  if (i < 2260 && i > 2220)
     buttons |= A_BUTTON;
-  if (i < 1500 && i > 1460)
+  }
+  if (keyB)
+  {
     buttons |= B_BUTTON;
-#else
-  // Initial Setup
-  if (inputSetup)
-  {
-#ifdef GAMEPAD
-    if (xSemaphoreTake(xSemaphoreInput, (TickType_t)100) == pdTRUE)
-    {
-      keystate = keyStateThread;
-      xSemaphoreGive(xSemaphoreInput);
-    }
-#elif defined(ONEBUTTON)
-    // Disabled threading because of instantaneous press checks.
-    keystate = buttonCheck();
-#elif defined(PS3GAMEPAD)
-#if defined(EPAPER130)
-    keystate = getReadShift();
-#else
-    if (xSemaphoreTake(xSemaphoreInput, (TickType_t)100) == pdTRUE)
-    {
-      keystate = keyStateThread;
-      xSemaphoreGive(xSemaphoreInput);
-    }
-#endif
-#endif
-
-    if (keystate & BIT_P1_Left)
-      buttons |= LEFT_BUTTON; // Left
-    if (keystate & BIT_P1_Right)
-      buttons |= RIGHT_BUTTON; // Right
-    if (keystate & BIT_P1_Top)
-      buttons |= UP_BUTTON; // Up
-    if (keystate & BIT_P1_Bottom)
-      buttons |= DOWN_BUTTON;
-    ; // Down
-    if (keystate & BIT_P2_Right)
-      buttons |= A_BUTTON;
-    ; // A
-    if (keystate & BIT_P2_Bottom)
-      buttons |= A_BUTTON; // A
-    if (keystate & BIT_P2_Left)
-      buttons |= B_BUTTON; // B
-    if (keystate & BIT_P2_Top)
-      buttons |= B_BUTTON; // B
   }
-  else
+  if (up || keypad_states[0])
   {
-#ifdef GAMEPAD
-    TaskHandle_t xHandle = NULL;
-    xSemaphoreInput = xSemaphoreCreateMutex();
-    getRawInput();
-    for (int i = 0; i < 8; i++)
-    {
-      TOUCH_SENSE[i] /= 2;
-      if (TOUCH_SENSE[i] > TOUCH_SENSE_MAX)
-        TOUCH_SENSE[i] = TOUCH_SENSE_MAX;
-      if (TOUCH_SENSE[i] < TOUCH_SENSE_MIN)
-        TOUCH_SENSE[i] = TOUCH_SENSE_MIN;
-    }
-
-    xTaskCreatePinnedToCore(inputThread, "Input", 1024, nullptr, 1, &xHandle, 0);
-#endif
-
-#ifdef PS3GAMEPAD
-#ifndef EPAPER130
-    TaskHandle_t xHandle = NULL;
-    xSemaphoreInput = xSemaphoreCreateMutex();
-    xTaskCreatePinnedToCore(inputThread, "Input", 1024, nullptr, 1, &xHandle, 0);
-#endif
-#endif
-
-    inputSetup = true;
+    buttons |= UP_BUTTON;
   }
-#endif
-
+  if (down || keypad_states[1])
+  {
+    buttons |= DOWN_BUTTON;
+  }
+  if (left || keypad_states[2])
+  {
+    buttons |= LEFT_BUTTON;
+  }
+  if (right || keypad_states[3])
+  {
+    buttons |= RIGHT_BUTTON;
+  }
   return buttons;
 }
 

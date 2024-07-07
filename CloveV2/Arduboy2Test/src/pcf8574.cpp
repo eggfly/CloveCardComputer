@@ -8,9 +8,6 @@
 
 bool keypad_states[5];
 
-
-
-
 Adafruit_PCF8574 pcf;
 
 // P0: BTN_UP
@@ -22,6 +19,9 @@ Adafruit_PCF8574 pcf;
 // P5: LCD_RESET
 // P6: 4V6_EN
 // P7: TP_RST
+
+#define PCF8574_TP_RST 7
+#define PCF8574_LCD_RST 5
 
 void setup_pcf8574()
 {
@@ -38,7 +38,11 @@ void setup_pcf8574()
     {
         pcf.pinMode(p, INPUT_PULLUP); // INPUT or INPUT_PULLUP are same.
     }
-    pcf.pinMode(PCF8574_TP_RST, OUTPUT);
+    pcf.pinMode(PCF8574_LCD_RST, OUTPUT);
+    pcf.digitalWrite(PCF8574_LCD_RST, LOW);
+    delay(300);
+    pcf.digitalWrite(PCF8574_LCD_RST, HIGH);
+    delay(200);
 }
 
 void loop_pcf8574()
@@ -48,11 +52,10 @@ void loop_pcf8574()
         auto state = pcf.digitalRead(p);
         if (!state)
         {
-            Serial.print("Button on GPIO #");
-            Serial.print(p);
-            Serial.println(" pressed!");
+            // Serial.print("Button on GPIO #");
+            // Serial.print(p);
+            // Serial.println(" pressed!");
         }
         keypad_states[p] = !state;
     }
-    // delay(10); // a short debounce delay
 }

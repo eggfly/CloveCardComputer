@@ -21,7 +21,6 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
-
 #include <Adafruit_TCA8418.h>
 
 Adafruit_TCA8418 keypad;
@@ -36,15 +35,16 @@ void TCA8418_irq()
   TCA8418_event = true;
 }
 
-
 void setup_tca8418()
 {
 
   // Serial.println(__FILE__);
 
-  if (! keypad.begin(TCA8418_DEFAULT_ADDR, &Wire1)) {
+  if (!keypad.begin(TCA8418_DEFAULT_ADDR, &Wire1))
+  {
     Serial.println("keypad not found, check wiring & pullups!");
-    while (1);
+    while (1)
+      ;
   }
 
   // configure the size of the keypad matrix.
@@ -62,6 +62,7 @@ void setup_tca8418()
   keypad.enableInterrupts();
 }
 
+uint8_t keyboard_states[7][10] = {0};
 
 void loop_tca8418()
 {
@@ -98,12 +99,19 @@ void loop_tca8418()
     {
       //  datasheet page 16 - Table 2
       int keyCode = keypad.getEvent();
-      if (keyCode & 0x80) Serial.print("PRESS\t ");
-      else Serial.print("RELEASE\t ");
+      auto isPress = keyCode & 0x80;
+      if (isPress)
+      {
+        Serial.print("PRESS\t ");
+      }
+      else
+      {
+        Serial.print("RELEASE\t ");
+      }
       //  map keyCode to GPIO nr.
       keyCode &= 0x7F;
 
-      if (keyCode > 96)  //  GPIO
+      if (keyCode > 96) //  GPIO
       {
         //  process  gpio
         keyCode -= 97;
@@ -114,6 +122,7 @@ void loop_tca8418()
       {
         //  process  matrix
         keyCode--;
+        keyboard_states[keyCode / 10][keyCode % 10] = isPress ? 1 : 0;
         Serial.print(keyCode / 10);
         Serial.print("\t ");
         Serial.print(keyCode % 10);
@@ -126,8 +135,8 @@ void loop_tca8418()
 
     //  check pending events
     int intstat = keypad.readRegister(TCA8418_REG_INT_STAT);
-    if ((intstat & 0x03) == 0) TCA8418_event = false;
-
+    if ((intstat & 0x03) == 0)
+      TCA8418_event = false;
   }
   // other code here
 }

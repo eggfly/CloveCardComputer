@@ -16,7 +16,7 @@
 //#define IPS240
 //#define IPS135
 // #define EPAPER130
-#define SCALE_2X
+#define SCALE_3X
 
 #if defined(DFROBOT_TOLED_BEETLEC3)
 #define BUTTONS_RESISTOR_LADDER
