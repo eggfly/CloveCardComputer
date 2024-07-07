@@ -44,7 +44,10 @@ void setup_pmu()
   // Disable SPEAKER by default.
   // PMU.disableALDO1();
   PMU.enableALDO1();
-
+  auto offTime = PMU.getPowerKeyPressOffTime();
+  Serial.printf("PowerKeyPressOffTime enum: %u\n", offTime);
+  PMU.setPowerKeyPressOffTime(XPOWERS_POWEROFF_4S);
+  PMU.setPowerKeyPressOnTime(XPOWERS_POWERON_128MS);
   printf("AXP2101 Power Initialized.\n");
 }
 

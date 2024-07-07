@@ -47,7 +47,7 @@ void Arduboy2Core::boot()
   Wire.begin(2, 3);
   Wire1.begin(43, 44);
   setup_pcf8574();
-  // setup_pmu();
+  setup_pmu();
   mmap_font_partition();
   setup_tca8418();
   delay(100);
