@@ -16,36 +16,35 @@
 //#define IPS240
 //#define IPS135
 // #define EPAPER130
+#define SCALE_2X
 
-#if defined(IPS135)
-#define SCREEN_WIDTH 135
-#define SCREEN_HEIGHT 240 // 122 VIS
-#define PS3GAMEPAD
-#elif defined(IPS240)
-#define SCREEN_WIDTH 240
-#define SCREEN_HEIGHT 240
-#define SCALE
-#define INTERLACED_UPDATE
-//#define GAMEPAD
-#define PS3GAMEPAD
-#elif defined(DFROBOT_TOLED_BEETLEC3)
-#define SCALE
+#if defined(DFROBOT_TOLED_BEETLEC3)
+#define BUTTONS_RESISTOR_LADDER
+
+#if defined(SCALE_3X)
+// 128x64 -> 374x192
+#define SCREEN_WIDTH 374
+#define SCREEN_HEIGHT 192
+#elif defined(SCALE_2X)
 // 128x64 -> 256x128
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT 128
-#define BUTTONS_RESISTOR_LADDER
+#else
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#endif
 #elif defined(EPAPER130)
 #define SCREEN_WIDTH 250
 #define SCREEN_HEIGHT 122 // 122 VIS
 #define INTERLACED_UPDATE
-#define SCALE
+#define SCALE_2X
 //#define ONE_BUTTON
 #define PS3GAMEPAD
 #endif
 
 #include <Arduino.h>
-#include <U8x8lib.h>
-#include <U8g2lib.h>
+// #include <U8x8lib.h>
+// #include <U8g2lib.h>
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -54,12 +53,12 @@
 #include <Wire.h>
 #endif
 
-#define SPI_CLK 18
-#define SPI_DATA 23
-#define SPI_CS 5
-#define SPI_DC 16
-#define SPI_RESET 17
-extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
+// #define SPI_CLK 18
+// #define SPI_DATA 23
+// #define SPI_CS 5
+// #define SPI_DC 16
+// #define SPI_RESET 17
+// extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 
 #if defined(ESP8266)
 #include "TFT_eSPI.h"
@@ -68,9 +67,9 @@ extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 #elif defined(DFROBOT_TOLED_BEETLEC3)
 
 
-#define OLED_DC 1
-#define OLED_CS 7
-#define OLED_RST 2
+// #define OLED_DC 1
+// #define OLED_CS 7
+// #define OLED_RST 2
 #elif defined(EPAPER130)
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
@@ -109,7 +108,7 @@ extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 #define RGB_OFF 0
 #define RED_LED  0
 #define GREEN_LED  1
-#define BLUE_LED  2
+#define BLUE_LED  7 // eggfly mod
 
 // bit values for button states
 // these are determined by the buttonsState() function
@@ -132,10 +131,6 @@ extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 
 #define ARDUBOY2_WIDTH   128
 #define ARDUBOY2_HEIGHT   64
-
-// eggfly
-void mmap_font_partition();
-void setup_amoled();
 
 /** \brief
  * Lower level functions generally dealing directly with the hardware.

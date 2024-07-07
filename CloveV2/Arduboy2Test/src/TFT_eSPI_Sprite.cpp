@@ -83,6 +83,7 @@ void setup_amoled()
   lcd_setRotation(1);
   spr.createSprite(AMOLED_WIDTH, AMOLED_HEIGHT);
   spr.setSwapBytes(1);
+  spr.fillScreen(RGB565(0x40, 0x40, 0x40));
   gfx->begin();
   gfx->setRotation(0);
   swappedBuffer = (uint8_t *)ps_malloc(AMOLED_WIDTH* AMOLED_HEIGHT * 2);

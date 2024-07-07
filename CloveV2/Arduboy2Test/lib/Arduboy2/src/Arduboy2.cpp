@@ -5,11 +5,12 @@
  */
 
 #include "Arduboy2.h"
+#include "CloveExternalAPI.h"
 
 #include "ab_logo.c"
 #include "glcdfont.c"
 
-extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
+// extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 
 #ifdef ADAFRUIT
 extern Adafruit_MCP23017 mcp;
@@ -942,23 +943,6 @@ static bool frontBuffer[128 * 64];
 static bool backBuffer[128 * 64];
 static SemaphoreHandle_t xSemaphoreDisplay;
 
-static void updateBuffer(bool *theBuffer)
-{
-  // displayEPaper.firstPage();
-  /*do
-  {*/
-  int i = 0;
-  for (int y = 0; y < SCREEN_HEIGHT; y++)
-    for (int x = 0; x < SCREEN_WIDTH; x++)
-    {
-      u8g2.setDrawColor(theBuffer[i++] ? 1 : 0);
-      u8g2.drawPixel(x, y);
-    }
-
-  //} while (displayEPaper.nextPage());
-  u8g2.sendBuffer(); // eggfly comment this
-}
-
 void lcd_PushColors(uint16_t x,
                     uint16_t y,
                     uint16_t width,
@@ -983,16 +967,16 @@ static void convertToRGB565(bool *inputBuffer, uint16_t *outputBuffer)
     }
   }
 }
+
 static void updateFullScreen(bool *theBuffer)
 {
   convertToRGB565(theBuffer, buffer565);
-  // updateBuffer(theBuffer);
-  lcd_PushColors(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (uint16_t *)buffer565);
-}
-
-static void updateInterlaceScreen(bool *theBuffer)
-{
-  updateBuffer(theBuffer);
+  const auto x = (AMOLED_WIDTH - SCREEN_WIDTH) / 2;
+  // const auto x = 80;
+  const auto y = (AMOLED_HEIGHT - SCREEN_HEIGHT) / 2;
+  // x = constrain(x, 0, AMOLED_WIDTH - SCREEN_WIDTH);
+  // y = constrain(y, 0, AMOLED_HEIGHT - SCREEN_HEIGHT);
+  lcd_PushColors(90, 32, SCREEN_WIDTH, SCREEN_HEIGHT, (uint16_t *)buffer565);
 }
 
 static void populateSprite(bool *Buffer, bool *Sprite)
@@ -1006,7 +990,7 @@ static void populateSprite(bool *Buffer, bool *Sprite)
     for (int x = 0; x < ARDUBOY2_WIDTH; x++)
     {
       pixel = y * ARDUBOY2_WIDTH + x;
-#ifdef SCALE
+#if defined(SCALE_2X)
       xDst = (x * SCREEN_WIDTH) / ARDUBOY2_WIDTH;
       yDst = (y * SCREEN_HEIGHT) / ARDUBOY2_HEIGHT;
       loc = xDst + yDst * SCREEN_WIDTH;
@@ -1014,12 +998,21 @@ static void populateSprite(bool *Buffer, bool *Sprite)
       pixelValue = Sprite[pixel];
       Buffer[loc] = pixelValue;
       Buffer[loc + SCREEN_WIDTH] = pixelValue;
-      Buffer[loc + SCREEN_WIDTH * 2] = pixelValue;
-      Buffer[loc + SCREEN_WIDTH * 3] = pixelValue;
       Buffer[loc + 1] = pixelValue;
       Buffer[loc + 1 + SCREEN_WIDTH] = pixelValue;
-      Buffer[loc + 1 + SCREEN_WIDTH * 2] = pixelValue;
-      Buffer[loc + 1 + SCREEN_WIDTH * 3] = pixelValue;
+#elif defined(SCALE_3X)
+      xDst = (x * SCREEN_WIDTH) / ARDUBOY2_WIDTH;
+      yDst = (y * SCREEN_HEIGHT) / ARDUBOY2_HEIGHT;
+      loc = xDst + yDst * SCREEN_WIDTH;
+
+      pixelValue = Sprite[pixel];
+      for (int dy = 0; dy < 3; dy++)
+      {
+        for (int dx = 0; dx < 3; dx++)
+        {
+          Buffer[loc + dx + dy * SCREEN_WIDTH] = pixelValue;
+        }
+      }
 #else
       loc = x + y * SCREEN_WIDTH;
       Buffer[loc] = Sprite[pixel];

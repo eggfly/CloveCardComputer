@@ -5,17 +5,8 @@
  */
 
 #include "Arduboy2Core.h"
+#include "CloveExternalAPI.h"
 
-U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2(U8G2_R0, SPI_CS, SPI_DC);
-#if defined(ESP8266)
-TFT_eSPI screen = TFT_eSPI(SCREEN_WIDTH, SCREEN_HEIGHT);
-#elif defined(IPS240)
-TFT_eSPI screen = TFT_eSPI(SCREEN_WIDTH, SCREEN_HEIGHT);
-#elif defined(IPS135)
-TFT_eSPI screen = TFT_eSPI(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-GxEPD2_BW<GxEPD2_213_B73, 250> displayEPaper(GxEPD2_213_B73(/*CS=5*/ SS, /*DC=*/17, /*RST=*/16, /*BUSY=*/4)); // GDEH0213B73
-#endif
 
 #ifdef ONEBUTTON
 #include "Button2.h"
@@ -24,6 +15,7 @@ GxEPD2_BW<GxEPD2_213_B73, 250> displayEPaper(GxEPD2_213_B73(/*CS=5*/ SS, /*DC=*/
 #ifdef PS3GAMEPAD
 #include <Ps3Controller.h>
 #endif
+#include <Wire.h>
 
 #ifdef ESP32
 static uint64_t inputlastTime = 0;
@@ -49,71 +41,37 @@ Arduboy2Core::Arduboy2Core() {}
 void Arduboy2Core::boot()
 {
   Serial.begin(115200);
+  delay(100);
+  Wire.begin(2, 3);
+  Wire1.begin(43, 44);
+  // setup_pmu();
+  mmap_font_partition();
+  setup_tca8418();
+  delay(100);
+  setup_pcf8574();
+  delay(100);
 #ifdef ESP32
   esp_timer_init();
 #endif
   // WiFi.mode(WIFI_OFF);
-  delay(100);
 // LED init
 #ifdef ESP8266
   myled.begin();
 #endif
 
-#ifdef ADAFRUIT
-  // DAC init, LCD backlit off
-  dac.begin(MCP4725address);
-  delay(50);
-  dac.setVoltage(0, false);
-  delay(100);
-
-  // MCP23017 and buttons init, should preceed the TFT init
-  mcp.begin(MCP23017address);
-  delay(100);
-
-  for (int i = 0; i < 8; ++i)
-  {
-    mcp.pinMode(i, INPUT);
-    mcp.pullUp(i, HIGH);
-  }
-
-  // Sound init and test
-  pinMode(PIN_SPEAKER_1, OUTPUT);
-  tone(PIN_SPEAKER_1, 200, 100);
-  delay(100);
-  tone(PIN_SPEAKER_1, 100, 100);
-  delay(100);
-  noTone(PIN_SPEAKER_1);
-
-  // TFT init
-  mcp.pinMode(CSTFTPIN, OUTPUT);
-  mcp.digitalWrite(CSTFTPIN, LOW);
-#endif
-
 #if defined(EPAPER130)
   displayEPaper.init(115200);
 #elif defined(DFROBOT_TOLED_BEETLEC3)
-  u8g2.begin();
+  // u8g2.begin();
 #else
   screen.begin();
   delay(200);
   screen.setRotation(0);
   screen.fillScreen(TFT_BLACK);
 #endif
-  Serial.write("Screen Init\r\n");
+  Serial.println("Screen Init");
 
-#ifdef ADAFRUIT
-  // LCD backlit on
-  for (uint8_t bcklt = 0; bcklt < 100; bcklt++)
-  {
-    dac.setVoltage(bcklt * 20, false);
-    delay(10);
-  }
-
-  dac.setVoltage(4095, true);
-  delay(500);
-#else
   delay(100);
-#endif
 
 #if defined(EPAPER130)
   displayEPaper.firstPage();
@@ -127,9 +85,8 @@ void Arduboy2Core::boot()
   screen.fillScreen(TFT_BLACK);
 #endif
 
-  mmap_font_partition();
   setup_amoled();
-  Serial.write("Boottt Done!");
+  Serial.println("Boot Done!");
 }
 
 void Arduboy2Core::setCPUSpeed8MHz() {};
@@ -555,6 +512,8 @@ uint8_t buttons = 0;
 
 uint8_t Arduboy2Core::buttonsState()
 {
+  // loop_pcf8574();
+  // loop_tca8418();
   buttons = 0;
 #ifdef ESP8266
   keystate = ~mcp.readGPIOAB() & 255;

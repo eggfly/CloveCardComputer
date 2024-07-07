@@ -14,7 +14,6 @@ version 2.1 of the License, or (at your option) any later version.
 #include <Arduino.h>
 
 #include <Arduboy2.h>
-#include <app.h>
 
 // make an instance of arduboy used for many functions
 Arduboy2 arduboy;

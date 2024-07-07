@@ -44,7 +44,6 @@ void setup_pmu()
   PMU.disableALDO1();
   // PMU.enableALDO1();
 
-  // Enable Q10 backlight
   PMU.enableALDO2();
 
   printf("AXP2101 Power Initialized.\n");

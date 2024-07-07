@@ -18,10 +18,10 @@ void loop_i2c(TwoWire &wire);
 void setup()
 {
   Serial.begin(115200);
-  delay(1000);
+  // delay(1000);
   Serial.println("setup");
-  setup_pmu();
   setup_i2c();
+  setup_pmu();
   setup_tca8418();
   setup_pcf8574();
 }
