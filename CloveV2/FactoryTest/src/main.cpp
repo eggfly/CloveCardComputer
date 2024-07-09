@@ -27,6 +27,14 @@ void mmap_font_partition()
   }
 }
 
+bool isFM = true;
+bool fmInitialized = false;
+bool musicInitialized = false;
+
+#define FM_INITIAL_VOLUME 2
+
+#define VDD_FM_VOLTAGE 3300
+
 void setup()
 {
   Serial.begin(115200);
@@ -49,21 +57,19 @@ void setup()
 
   setup_ft3168();
   setup_amoled();
-  setup_music_player();
+  if (!isFM)
+  {
+    setup_music_player();
+    musicInitialized = true;
+  }
   pinMode(0, INPUT_PULLUP);
   // test_amoled();
   // Prepare for BLDO2
   PMU.setDC3Voltage(3300);
-
 }
 
-bool isFM = false;
-bool fmInitialized = false;
-#define FM_INITIAL_VOLUME 2
-
-#define VDD_FM_VOLTAGE 3300
-
-void loop_radio_tuner() {
+void loop_radio_tuner()
+{
   static int32_t prev_encoder_count = 0;
   int32_t count = static_cast<int32_t>(encoder.getCount() / 2);
   if (count != prev_encoder_count)
@@ -103,7 +109,8 @@ void loop(void)
   }
   if (isFM)
   {
-    if (!audioSelToFM) {
+    if (!audioSelToFM)
+    {
       audioSelToFM = true;
       PMU.enableBLDO2();
       // Because BLDO2 Input is DC3, Set The Voltage to 3.3V
@@ -112,7 +119,7 @@ void loop(void)
     if (!fmInitialized)
     {
       fmInitialized = true;
-      
+
       PMU.setALDO4Voltage(VDD_FM_VOLTAGE);
       PMU.enableALDO4();
 
@@ -125,10 +132,16 @@ void loop(void)
   }
   else
   {
-    if (audioSelToFM) {
+    if (audioSelToFM)
+    {
       audioSelToFM = false;
       PMU.disableBLDO2();
       // AUDIO_SEL as Music Player Input
+    }
+    if (!musicInitialized)
+    {
+      setup_music_player();
+      musicInitialized = true;
     }
     loop_music_player();
   }
