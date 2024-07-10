@@ -44,6 +44,7 @@ void setup()
   mmap_font_partition();
   setup_pmu();
   setup_encoder();
+  setup_headphone_jack_detect();
 
   // setup_spm1423();
   setup_pcf8574();

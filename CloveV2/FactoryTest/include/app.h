@@ -59,6 +59,9 @@ void setup_rda5807m();
 void loop_rda5807m();
 void loop_radio_ui();
 
+void setup_headphone_jack_detect();
+void is_headphone_jack_inserted();
+
 extern ESP32Encoder encoder;
 
 void setup_encoder();

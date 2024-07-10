@@ -34,6 +34,7 @@ void loop_radio_ui()
     uint16_t freq;
     if (tp_fingers_count > 0)
     {
+        is_headphone_jack_inserted();
         freq = map(tp_x1, MIN_FREQ_LEFT_X, MAX_FREQ_RIGHT_X, MIN_FREQ, MAX_FREQ);
         freq = constrain(freq, MIN_FREQ, MAX_FREQ);
         // Round to 10
