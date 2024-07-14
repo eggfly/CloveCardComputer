@@ -1,5 +1,6 @@
 #include <app.h>
 #include "FM_536x240.h"
+#include "my_ina219.h"
 
 const auto LINE_WIDTH = 3;
 const auto LINE_TOP = 70;
@@ -13,7 +14,7 @@ const auto MAX_FREQ = 10800;
 const auto SAVED_FREQ_DOT_Y = 82;
 const auto SAVED_FREQ_DOT_R = 2;
 const auto SAVED_FREQ_DOT_COLOR = RGB565(0xdc, 0x28, 0x18);
-const auto INFO_SMALL_TEXT_TOP = 13;
+const auto INFO_SMALL_TEXT_TOP = 10;
 const auto INFO_MARGIN_RIGHT = 20;
 const auto INFO_LINE_GAP = 1;
 
@@ -62,7 +63,6 @@ void loop_radio_ui()
     RADIO_INFO info;
     radio.getRadioInfo(&info);
     char info_str[32];
-    sprintf(info_str, "RSSI: %d", info.rssi);
     typedef struct
     {
         int16_t x;
@@ -72,12 +72,34 @@ void loop_radio_ui()
     } TextBounds;
     TextBounds bounds;
     gfx->setTextSize(2);
+
+    sprintf(info_str, "RSSI: %d", info.rssi);
     gfx->getTextBounds(info_str, 0, 0, &bounds.x, &bounds.y, &bounds.w, &bounds.h);
     gfx->setCursor(536 - INFO_MARGIN_RIGHT - bounds.w, INFO_SMALL_TEXT_TOP);
     gfx->println(info_str);
+
+    gfx->setTextSize(2);
     sprintf(info_str, "Tuned: %c", info.tuned ? 'Y' : 'N');
     gfx->getTextBounds(info_str, 0, 0, &bounds.x, &bounds.y, &bounds.w, &bounds.h);
     gfx->setCursor(536 - INFO_MARGIN_RIGHT - bounds.w, INFO_SMALL_TEXT_TOP + bounds.h + INFO_LINE_GAP);
     gfx->println(info_str);
+
+    sprintf(info_str, "Stereo: %c", info.stereo ? 'Y' : 'N');
+    gfx->getTextBounds(info_str, 0, 0, &bounds.x, &bounds.y, &bounds.w, &bounds.h);
+    gfx->setCursor(536 - INFO_MARGIN_RIGHT - bounds.w, INFO_SMALL_TEXT_TOP + (bounds.h + INFO_LINE_GAP) * 2);
+    gfx->println(info_str);
+
+    gfx->setTextSize(2);
+    gfx->setTextColor(TFT_WHITE);
+    sprintf(info_str, "%.3fV %d%%", prevBatteryVoltage / 1000.0, prevBatteryPercent);
+    gfx->getTextBounds(info_str, 0, 0, &bounds.x, &bounds.y, &bounds.w, &bounds.h);
+    gfx->setCursor(15, 240 - bounds.h - 4);
+    gfx->println(info_str);
+
+    sprintf(info_str, "%.1fmA/%.1fmA", ina219_data[0].current_mA, ina219_data[1].current_mA);
+    gfx->getTextBounds(info_str, 0, 0, &bounds.x, &bounds.y, &bounds.w, &bounds.h);
+    gfx->setCursor(536 - bounds.w - 5, 240 - bounds.h - 4);
+    gfx->println(info_str);
+
     flush_screen();
 }

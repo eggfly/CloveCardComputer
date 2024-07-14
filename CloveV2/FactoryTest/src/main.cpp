@@ -43,6 +43,8 @@ void setup()
   printf("Serial.begin() called.\n");
   mmap_font_partition();
   setup_pmu();
+  setup_ina219(true);
+  setup_ina219(false);
   setup_encoder();
   setup_headphone_jack_detect();
 
@@ -96,7 +98,9 @@ bool audioSelToFM = false;
 
 void loop(void)
 {
-  // loop_pmu();
+  loop_pmu();
+  loop_ina219(true);
+  loop_ina219(false);
   loop_pcf8574();
   // Serial.println("loop...");
   loop_ft3168();

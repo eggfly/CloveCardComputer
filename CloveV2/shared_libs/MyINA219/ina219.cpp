@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <Adafruit_INA219.h>
+#include "my_ina219.h"
 
 Adafruit_INA219 ina219_vbus(0x40);
 Adafruit_INA219 ina219_vbat(0x41);
@@ -28,6 +29,8 @@ void setup_ina219(bool isVbusOrVbat)
 
 long update_time[2] = {0, 0};
 
+INA219_Data ina219_data[2];
+
 void loop_ina219(bool isVbusOrVbat)
 {
     Adafruit_INA219 &ina219 = isVbusOrVbat? ina219_vbus: ina219_vbat;
@@ -48,6 +51,12 @@ void loop_ina219(bool isVbusOrVbat)
     current_mA = ina219.getCurrent_mA();
     power_mW = ina219.getPower_mW();
     loadvoltage = busvoltage + (shuntvoltage / 1000);
+
+    ina219_data[index].shuntVoltage = shuntvoltage;
+    ina219_data[index].busVoltage = busvoltage;
+    ina219_data[index].current_mA = current_mA;
+    ina219_data[index].loadVoltage = loadvoltage;
+    ina219_data[index].power_mW = power_mW;
 
     Serial.print("Bus Voltage:   ");
     Serial.print(busvoltage);

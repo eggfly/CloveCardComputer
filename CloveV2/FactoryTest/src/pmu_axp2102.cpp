@@ -1,6 +1,5 @@
 
 
-
 #include "XPowersLib.h"
 
 #include <Wire.h>
@@ -44,26 +43,57 @@ void setup_pmu()
   // Disable SPEAKER by default.
   // PMU.disableALDO1();
   PMU.enableALDO1();
+  auto targetVbat = PMU.getChargeTargetVoltage();
 
+  /*     XPOWERS_AXP2101_CHG_VOL_4V = 1,
+    XPOWERS_AXP2101_CHG_VOL_4V1,
+    XPOWERS_AXP2101_CHG_VOL_4V2,
+    XPOWERS_AXP2101_CHG_VOL_4V35,
+    XPOWERS_AXP2101_CHG_VOL_4V4,
+     */
+  switch (targetVbat)
+  {
+  case XPOWERS_AXP2101_CHG_VOL_4V1:
+    Serial.printf("AXP2101 Target VBAT Voltage = 4.1V\n");
+    break;
+
+  case XPOWERS_AXP2101_CHG_VOL_4V2:
+    Serial.printf("AXP2101 Target VBAT Voltage = 4.2V\n");
+    break;
+
+  default:
+    Serial.printf("AXP2101 Target VBAT Voltage enum = %d\n", targetVbat);
+    break;
+  }
+  if (targetVbat != XPOWERS_AXP2101_CHG_VOL_4V2) {
+    PMU.setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V2);
+  }
   printf("AXP2101 Power Initialized.\n");
 }
 
+int prevBatteryPercent;
+uint16_t prevBatteryVoltage;
+long batteryPercentUpdateTime;
+
 void loop_pmu()
 {
-  // ALDO2 IMAX=300mA
-  // 500~3500mV, 100mV/step,31steps
-  PMU.setALDO2Voltage(vol);
-  delay(1);
-  uint16_t targetVol = PMU.getALDO2Voltage();
-  printf("ALDO2  :%s   Voltage:%u mV \n", PMU.isEnableALDO2() ? "ENABLE" : "DISABLE", targetVol);
-  if (targetVol != vol)
+  auto time = millis();
+  if (time - batteryPercentUpdateTime < 1000)
   {
-    Serial.println(">>> FAILED!");
+    return;
   }
-  vol += 100;
-  if (vol >= 3300)
+  batteryPercentUpdateTime = time;
+  auto percent = PMU.getBatteryPercent();
+  auto vbat = PMU.getBattVoltage();
+  if (percent != prevBatteryPercent)
   {
-    vol = BL_MIN_VOLTAGE;
+    Serial.printf("BatteryPercent: %d %%\n", percent);
   }
-  delay(500);
+  prevBatteryPercent = percent;
+
+  if (vbat != prevBatteryVoltage)
+  {
+    Serial.printf("BatteryVoltage: %d mV\n", vbat);
+  }
+  prevBatteryVoltage = vbat;
 }

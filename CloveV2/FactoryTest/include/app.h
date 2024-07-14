@@ -28,6 +28,10 @@ extern Adafruit_PCF8574 pcf;
 
 extern int32_t tp_fingers_count, tp_x1, tp_y1, tp_x2, tp_y2;
 
+
+extern int prevBatteryPercent;
+extern uint16_t prevBatteryVoltage;
+
 void setup_pmu();
 void loop_pmu();
 
@@ -37,6 +41,9 @@ void test_amoled();
 
 void setup_pcf8574();
 void loop_pcf8574();
+
+void setup_ina219(bool isVbusOrVbat);
+void loop_ina219(bool isVbusOrVbat);
 
 const esp_partition_t *find_partition(esp_partition_type_t type, esp_partition_subtype_t subtype, const char *name);
 
