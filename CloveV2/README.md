@@ -31,40 +31,7 @@ TODO: CHANGE
 
 | Function | IO Pin | 备注 |
 | -- | -- | -- |
-| BootBtn/MIC_DATA | IO0 | 顶部按钮1 & 麦克风 I2S Data |
-| ROW1-ROW7 | IO1-IO7 | Q10键盘 ROW1-7 |
-| MIC_CLK | IO8 | 麦克风 I2S CLK Pin |
-| LCD_RST | IO9 | 屏幕 Reset |
-| COL1-COL5 | IO10-IO14 | Q10键盘 COL1-5 |
-| LCD_SIO0 | IO15 | 屏幕 SIO0 |
-| LCD_SI1  | IO16 | 屏幕 SI1 |
-| LCD_SI2  | IO17 | 屏幕 SI2 |
-| LCD_SI3  | IO18 | 屏幕 SI3 |
-| USB D- | IO19 | 连到 USB Type-C |
-| USB D+ | IO20 | 连到 USB Type-C |
-| LCD_CS | IO21 | 屏幕 QSPI: 片选 |
-| N/A | IO33-37 | 内部已占用 |
-| PMIC_IRQ | IO38 | PMIC 中断 |
-| SD_MISO | IO39 | SD MISO |
-| SD_SCLK | IO40 | SD SCLK |
-| SD_MOSI | IO41 | SD MOSI |
-| SD_CS   | IO42 | SD 片选 |
-| I2C_SDA | IO43 | 原来是 U0TXD，现在是 SDA，外部上拉 |
-| I2C_SCL | IO44 | 原来是 U0RXD，现在是 SCL，外部上拉 |
-| LCD_SCLK| IO45 | 屏幕 QSPI: 时钟 |
-| I2S_DIN | IO46 | I2S Data |
-| I2S_BCK | IO47 | I2S BCK  |
-| I2S_LRCK| IO48 | I2S LRCK |
-
-## Others
-
-TODO: CHANGE
-
-| Function | 备注 |
-| -- | -- |
-| AXP Power Button | 按钮2,通过I2C和IRQ读取 |
-| Charge LED | 通过I2C读取或者控制 |
-| ALDO3 | 默认3.3V，给PCM5102的DVDD和AVDD的LDO供电 |
+| BootBtn | IO0 | 左侧按钮3 |
 
 
 ## I2C Addresses
